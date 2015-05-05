@@ -635,9 +635,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	for (int i = 0; i < SNeutrinoSettings::P_SETTINGS_MAX; i++)//settings.h, settings.cpp
 		g_settings.personalize[i] = configfile.getInt32( personalize_settings[i].personalize_settings_name, personalize_settings[i].personalize_default_val );
 
-	g_settings.colored_events_channellist = configfile.getInt32( "colored_events_channellist" , 0 );
-	g_settings.colored_events_infobar = configfile.getInt32( "colored_events_infobar" , 2 ); // next
-
 	g_settings.contrast_fonts = configfile.getInt32("contrast_fonts", 0);
 
 	//network
@@ -1248,9 +1245,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setString("personalize_pincode", g_settings.personalize_pincode);
 	for (int i = 0; i < SNeutrinoSettings::P_SETTINGS_MAX; i++) //settings.h, settings.cpp
 		configfile.setInt32(personalize_settings[i].personalize_settings_name, g_settings.personalize[i]);
-
-	configfile.setInt32( "colored_events_channellist", g_settings.colored_events_channellist );
-	configfile.setInt32( "colored_events_infobar", g_settings.colored_events_infobar );
 
 	configfile.setInt32( "contrast_fonts", g_settings.contrast_fonts );
 	//network
@@ -2494,8 +2488,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					printf("[neutrino] CSreenSaver stop; msg: %lX\n", msg);
 					screensaver(false);
 
-					videoDecoder->StopPicture();
-					videoDecoder->ShowPicture(DATADIR "/neutrino/icons/radiomode.jpg");
+					frameBuffer->stopFrame();
+					frameBuffer->showFrame("radiomode.jpg");
 
 					if (msg <= CRCInput::RC_MaxRC) {
 						// ignore first keypress - just quit the screensaver
@@ -3616,7 +3610,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t _msg, neutrino_msg_data_t data)
 		}
 		if((data & mode_mask)== mode_ts && CMoviePlayerGui::getInstance().Playing()) {
 			if(mode == mode_radio)
-				videoDecoder->StopPicture();
+				frameBuffer->stopFrame();
 			lastMode=mode;
 			mode=mode_ts;
 		}
@@ -3719,7 +3713,7 @@ void CNeutrinoApp::ExitRun(const bool /*write_si*/, int retcode)
 		stopPlayBack();
 
 		frameBuffer->paintBackground();
-		videoDecoder->ShowPicture(DATADIR "/neutrino/icons/shutdown.jpg");
+		frameBuffer->showFrame("shutdown.jpg");
 
 		delete cHddStat::getInstance();
 		delete CRecordManager::getInstance();
@@ -3914,7 +3908,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 			g_Radiotext = NULL;
 		}
 
-		videoDecoder->StopPicture();
+		frameBuffer->stopFrame();
 		CVFD::getInstance()->ShowIcon(FP_ICON_RADIO, false);
 		StartSubtitles(!rezap);
 	}
@@ -4160,7 +4154,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff, bool fromDeepStandby )
 			radioMode( false );
 		} else {
 			/* for standby -> tv mode from radio mode in case of record */
-			videoDecoder->StopPicture();
+			frameBuffer->stopFrame();
 			tvMode( false );
 		}
 		t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
@@ -4222,7 +4216,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 		else
 			channelList->zapTo(0, true); /* force re-zap */
 	}
-	videoDecoder->ShowPicture(DATADIR "/neutrino/icons/radiomode.jpg");
+	frameBuffer->showFrame("radiomode.jpg");
 }
 
 //switching from current mode to tv or radio mode or to optional parameter prev_mode
@@ -4355,12 +4349,12 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	else if(actionKey=="nkplayback" || actionKey=="ytplayback" || actionKey=="tsmoviebrowser" || actionKey=="fileplayback") {
 		frameBuffer->Clear();
 		if(mode == NeutrinoMessages::mode_radio )
-			videoDecoder->StopPicture();
+			frameBuffer->stopFrame();
 		int _mode = mode;
 		// FIXME CMediaPlayerMenu::getInstance()->exec(NULL, actionKey); ??
 		CMoviePlayerGui::getInstance().exec(NULL, actionKey);
 		if(_mode == NeutrinoMessages::mode_radio )
-			videoDecoder->ShowPicture(DATADIR "/neutrino/icons/radiomode.jpg");
+			frameBuffer->showFrame("radiomode.jpg");
 #if 0
 		else if (_mode == mode_webtv)
 			tvMode(true);
