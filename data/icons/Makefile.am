@@ -1,4 +1,4 @@
-installdir = $(DATADIR)/neutrino/icons
+installdir = $(ICONSDIR)
 
 locale = \
 	locale/deutsch.png \
@@ -21,7 +21,7 @@ locale_unmaintained = \
 	locale/unmaintained/svenska.png
 
 install_DATA  = $(locale)
-install_DATA += $(locale_unmaintained)
+#install_DATA += $(locale_unmaintained)
 
 install_DATA += \
 	0.png \

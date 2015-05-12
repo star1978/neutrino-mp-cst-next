@@ -70,6 +70,7 @@ private:
 	void GetTimeCGI(CyhookHandler *hh);
 	void GetServicesxmlCGI(CyhookHandler *hh);
 	void GetBouquetsxmlCGI(CyhookHandler *hh);
+	void GetUBouquetsxmlCGI(CyhookHandler *hh);
 	void GetChannel_IDCGI(CyhookHandler *hh);
 	void GetTPChannel_IDCGI(CyhookHandler *hh);
 	void MessageCGI(CyhookHandler *hh);
@@ -116,7 +117,7 @@ private:
 
 
 protected:
-	static const unsigned int PLUGIN_DIR_COUNT = 7;
+	static const unsigned int PLUGIN_DIR_COUNT = 9;
 	static std::string PLUGIN_DIRS[PLUGIN_DIR_COUNT];
 	CNeutrinoAPI	*NeutrinoAPI;
 

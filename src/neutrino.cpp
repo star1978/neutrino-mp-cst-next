@@ -237,7 +237,7 @@ CNeutrinoApp::CNeutrinoApp()
 	standby_pressed_at.tv_sec = 0;
 
 	frameBuffer = CFrameBuffer::getInstance();
-	frameBuffer->setIconBasePath(DATADIR "/neutrino/icons/");
+	frameBuffer->setIconBasePath(ICONSDIR);
 #if HAVE_TRIPLEDRAGON || USE_STB_HAL
 	/* this needs to happen before the framebuffer is set up */
 	init_td_api();
@@ -567,7 +567,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	//screen saver
 	g_settings.screensaver_delay = configfile.getInt32("screensaver_delay", 1);
-	g_settings.screensaver_dir = configfile.getString("screensaver_dir", DATADIR "/neutrino/icons/");
+	g_settings.screensaver_dir = configfile.getString("screensaver_dir", ICONSDIR);
 	g_settings.screensaver_timeout = configfile.getInt32("screensaver_timeout", 10);
 
 	//vcr
@@ -659,6 +659,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.network_nfs_recordingdir = configfile.getString( "network_nfs_recordingdir", "/media/sda1/movie" );
 	g_settings.timeshiftdir = configfile.getString( "timeshiftdir", "" );
 	g_settings.downloadcache_dir = configfile.getString( "downloadcache_dir", g_settings.network_nfs_recordingdir.c_str());
+	g_settings.last_webtv_dir = configfile.getString( "last_webtv_dir", "/var/tuxbox/config");
 
 	g_settings.temp_timeshift = configfile.getInt32( "temp_timeshift", 0 );
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
@@ -1276,6 +1277,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setString( "network_nfs_recordingdir", g_settings.network_nfs_recordingdir);
 	configfile.setString( "timeshiftdir", g_settings.timeshiftdir);
 	configfile.setString( "downloadcache_dir", g_settings.downloadcache_dir);
+	configfile.setString( "last_webtv_dir", g_settings.last_webtv_dir);
 	configfile.setBool  ("filesystem_is_utf8"                 , g_settings.filesystem_is_utf8             );
 
 	//recording (server + vcr)
@@ -1708,12 +1710,14 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 				AllFavBouquetList->addBouquet(b);
 		}
 	}
+#if 0
 	if (!webtvList.empty()) {
 		/* provider */
 		CBouquet* webtvBouquet = new CBouquet(0, g_Locale->getText(LOCALE_BOUQUETNAME_WEBTV), false, true);
 		webtvBouquet->channelList->SetChannelList(&webtvList);
 		TVbouquetList->Bouquets.push_back(webtvBouquet);
 	}
+#endif
 	printf("[neutrino] got %d TV and %d RADIO bouquets\n", tvi, ri); fflush(stdout);
 	TIMER_STOP("[neutrino] took");
 

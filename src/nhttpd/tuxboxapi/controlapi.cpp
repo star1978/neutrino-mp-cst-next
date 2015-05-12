@@ -60,7 +60,11 @@ extern CBouquetManager *g_bouquetManager;
 #if HAVE_DUCKBOX_HARDWARE
 #define EVENTDEV "/dev/input/event0"
 #elif HAVE_SPARK_HARDWARE
+#if BOXMODEL_SPARK7162
+#define EVENTDEV "/dev/input/nevis_ir"
+#else
 #define EVENTDEV "/dev/input/event1"
+#endif
 #else
 #define EVENTDEV "/dev/input/input0"
 #endif
@@ -87,9 +91,11 @@ void CControlAPI::init(CyhookHandler *hh)
 		PLUGIN_DIRS[1].append("/scripts");
 		PLUGIN_DIRS[2]=PLUGIN_DIRS[3]=hh->WebserverConfigList["WebsiteMain.directory"];
 		PLUGIN_DIRS[3].append("/scripts");
-		PLUGIN_DIRS[4]="/var/tuxbox/plugins";
-		PLUGIN_DIRS[5]=PLUGINDIR;
-		PLUGIN_DIRS[6]="/mnt/plugins";
+		PLUGIN_DIRS[4]=GAMESDIR;
+		PLUGIN_DIRS[5]=g_settings.plugin_hdd_dir;
+		PLUGIN_DIRS[6]=PLUGINDIR_MNT;
+		PLUGIN_DIRS[7]=PLUGINDIR_VAR;
+		PLUGIN_DIRS[8]=PLUGINDIR;
 	}
 }
 
@@ -162,6 +168,7 @@ const CControlAPI::TyCgiCall CControlAPI::yCgiCallList[]=
 	// channel & bouquet & epg & zapping handling
 	{"getservicesxml", 	&CControlAPI::GetServicesxmlCGI,""},
 	{"getbouquetsxml", 	&CControlAPI::GetBouquetsxmlCGI,""},
+	{"getubouquetsxml", 	&CControlAPI::GetUBouquetsxmlCGI,""},
 	{"channellist", 	&CControlAPI::ChannellistCGI,	"text/plain"},
 	{"logolist",	 	&CControlAPI::LogolistCGI,	"text/plain"},
 	{"getbouquet", 		&CControlAPI::GetBouquetCGI,	"+xml"},
@@ -571,6 +578,13 @@ void CControlAPI::GetServicesxmlCGI(CyhookHandler *hh)
 void CControlAPI::GetBouquetsxmlCGI(CyhookHandler *hh)
 {
 	hh->SendFile(CONFIGDIR "/zapit/bouquets.xml");
+}
+//-----------------------------------------------------------------------------
+
+// send ubouquets.xml
+void CControlAPI::GetUBouquetsxmlCGI(CyhookHandler *hh)
+{
+	hh->SendFile(CONFIGDIR "/zapit/ubouquets.xml");
 }
 
 //-----------------------------------------------------------------------------
