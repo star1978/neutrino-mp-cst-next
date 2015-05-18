@@ -47,7 +47,8 @@
 //#define DEBUG_DEMUX 1 // debug start/close/change
 //#define DEBUG_CACHED_SECTIONS 1
 //#define DEBUG_COMPLETE_SECTIONS 1
-#define DEBUG_COMPLETE 1
+//#define DEBUG_COMPLETE 1
+//#define DEBUG_SKIP_LOOPED 1
 
 //static MyDMXOrderUniqueKey myDMXOrderUniqueKey;
 
@@ -278,7 +279,7 @@ int DMX::getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeout
 	eit_extended_section_header *eit_extended_header;
 
 	/* filter == 0 && maks == 0 => EIT dummy filter to slow down EIT thread startup */
-	if (pID == 0x12 && filters[filter_index].filter == 0 && filters[filter_index].mask == 0)
+	if ((pID == 0x12 || pID == 0x39) && filters[filter_index].filter == 0 && filters[filter_index].mask == 0)
 	{
 		//dprintf("dmx: dummy filter, sleeping for %d ms\n", timeoutInMSeconds);
 		usleep(timeoutInMSeconds * 1000);
@@ -398,7 +399,7 @@ int DMX::getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeout
 	unsigned short current_tsid = 0;
 	uint8_t segment_last_section_number = last_section_number;
 
-	if (pID == 0x12) {
+	if (pID == 0x12 || pID == 0x39) {
 		eit_extended_header = (eit_extended_section_header *)(buf+8);
 		current_onid = 	eit_extended_header->original_network_id_hi * 256 +
 			eit_extended_header->original_network_id_lo;
@@ -410,7 +411,7 @@ int DMX::getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeout
 	sections_id_t s_id = create_sections_id(table_id, eh_tbl_extension_id, current_onid, current_tsid, section_number);
 
 	bool complete = false;
-	if (pID == 0x12)
+	if (pID == 0x12 || pID == 0x39)
 		complete = check_complete(s_id, section_number, last_section_number, segment_last_section_number);
 
 	/* if we are not caching the already read sections (CN-thread), check EIT version and get out */
@@ -462,9 +463,11 @@ int DMX::getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeout
 #endif
 	}
 	//debug
+#ifdef DEBUG_SKIP_LOOPED
 	if(timeouts == -1) {
 		xcprintf("	%s: skipped looped", name.c_str());
 	}
+#endif
 
 	if(complete) {
 		seenSections.clear();
@@ -653,7 +656,7 @@ int DMX::change(const int new_filter_index, const t_channel_id new_current_servi
 	}
 
 	if (sections_debug) { // friendly debug output...
-		if(pID==0x12 && filters[0].filter != 0x4e) { // Only EIT
+		if((pID==0x12 || pID==0x39) && filters[0].filter != 0x4e) { // Only EIT
 			printdate_ms(stderr);
 			fprintf(stderr, "changeDMX [EIT]-> %d (0x%x/0x%x) %s (%ld seconds)\n",
 				new_filter_index, filters[new_filter_index].filter,
