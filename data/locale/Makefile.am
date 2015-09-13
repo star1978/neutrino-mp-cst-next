@@ -2,7 +2,8 @@ installdir = $(LOCALEDIR)
 
 locale = \
 	deutsch.locale \
-	english.locale
+	english.locale \
+	russkij.locale
 
 locale_unmaintained = \
 	unmaintained/bayrisch.locale \
@@ -15,7 +16,6 @@ locale_unmaintained = \
 	unmaintained/nederlands.locale \
 	unmaintained/polski.locale \
 	unmaintained/portugues.locale \
-	unmaintained/russkij.locale \
 	unmaintained/slovak.locale \
 	unmaintained/suomi.locale \
 	unmaintained/svenska.locale
