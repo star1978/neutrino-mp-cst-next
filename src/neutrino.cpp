@@ -532,8 +532,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.infobar_show_channellogo   = configfile.getInt32("infobar_show_channellogo"  , 3 );
 	g_settings.infobar_progressbar   = configfile.getInt32("infobar_progressbar"  , 1 ); // below channel name
 	g_settings.casystem_display = configfile.getInt32("casystem_display", 1 );//discreet ca mode default
+	g_settings.casystem_dotmatrix = configfile.getInt32("casystem_dotmatrix", 0 );
 	g_settings.casystem_frame = configfile.getInt32("casystem_frame", 0 );
-	g_settings.dotmatrix = configfile.getInt32("infobar_dotmatrix", 0 );
 	g_settings.scrambled_message = configfile.getBool("scrambled_message", false );
 	g_settings.volume_pos = configfile.getInt32("volume_pos", CVolumeBar::VOLUMEBAR_POS_TOP_RIGHT );
 	g_settings.volume_digits = configfile.getBool("volume_digits", true);
@@ -1154,8 +1154,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32("infobar_show_channellogo"  , g_settings.infobar_show_channellogo  );
 	configfile.setInt32("infobar_progressbar"  , g_settings.infobar_progressbar  );
 	configfile.setInt32("casystem_display"  , g_settings.casystem_display  );
+	configfile.setInt32("casystem_dotmatrix"  , g_settings.casystem_dotmatrix  );
 	configfile.setInt32("casystem_frame"  , g_settings.casystem_frame  );
-	configfile.setInt32("infobar_dotmatrix", g_settings.dotmatrix );
 	configfile.setBool("scrambled_message"  , g_settings.scrambled_message  );
 	configfile.setInt32("volume_pos"  , g_settings.volume_pos  );
 	configfile.setBool("volume_digits", g_settings.volume_digits);
@@ -3677,6 +3677,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t _msg, neutrino_msg_data_t data)
 //		ShowHint(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_EXTRA_ZAPIT_SDT_CHANGED),
 //				CMessageBox::mbrBack,CMessageBox::mbBack, NEUTRINO_ICON_INFO);
 	}
+#if !HAVE_SPARK_HARDWARE && !HAVE_DUCKBOX_HARDWARE
 	else if (msg == NeutrinoMessages::EVT_HDMI_CEC_VIEW_ON) {
 		if(g_settings.hdmi_cec_view_on)
 			videoDecoder->SetCECAutoView(g_settings.hdmi_cec_view_on);
@@ -3689,6 +3690,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t _msg, neutrino_msg_data_t data)
 
 		return messages_return::handled;
 	}
+#endif
 	else if (msg == NeutrinoMessages::EVT_SET_MUTE) {
 		g_audioMute->AudioMute((int)data, true);
 		return messages_return::handled;
@@ -3855,13 +3857,13 @@ void CNeutrinoApp::ExitRun(const bool /*write_si*/, int retcode)
 			stop_video();
 
 #if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
-			if (retcode == 1) {
+			if (retcode == SHUTDOWN) {
 				CCECSetup cecsetup;
 				cecsetup.setCECSettings(false);
 			}
 #endif
 #ifdef ENABLE_GRAPHLCD
-			if (retcode == 1)
+			if (retcode == SHUTDOWN)
 				nGLCD::SetBrightness(0);
 #endif
 
@@ -4593,10 +4595,8 @@ void sighandler (int signum)
 
 int main(int argc, char **argv)
 {
-#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
 	/* build date */
 	printf(">>> Neutrino (compiled %s %s) <<<\n", __DATE__, __TIME__);
-#endif
 	g_Timerd = NULL;
 	g_Radiotext = NULL;
 	g_Zapit = NULL;
@@ -4626,8 +4626,6 @@ void CNeutrinoApp::loadKeys(const char * fname)
 	}
 
 	//rc-key configuration
-	g_settings.key_switchformat = tconfig.getInt32("key_switchformat", CRCInput::RC_prev);
-	g_settings.key_next43mode = tconfig.getInt32("key_next43mode", CRCInput::RC_next);
 	g_settings.key_tvradio_mode = tconfig.getInt32( "key_tvradio_mode", (unsigned int)CRCInput::RC_nokey );
 	g_settings.key_power_off = tconfig.getInt32( "key_power_off", CRCInput::RC_standby );
 
@@ -4710,8 +4708,6 @@ void CNeutrinoApp::saveKeys(const char * fname)
 		tconfig = newconfig;
 	}
 	//rc-key configuration
-	tconfig.setInt32( "key_switchformat", g_settings.key_switchformat );
-	tconfig.setInt32( "key_next43mode", g_settings.key_next43mode );
 	tconfig.setInt32( "key_tvradio_mode", g_settings.key_tvradio_mode );
 	tconfig.setInt32( "key_power_off", g_settings.key_power_off );
 
@@ -4824,7 +4820,7 @@ void CNeutrinoApp::StartSubtitles(bool show)
 		CMoviePlayerGui::getInstance().StartSubtitles(show);
 		return;
 	}
-		
+
 #ifdef ENABLE_GRAPHLCD
 	nGLCD::MirrorOSD(false);
 #endif

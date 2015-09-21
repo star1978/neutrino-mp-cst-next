@@ -201,6 +201,8 @@ void CMoviePlayerGui::Init(void)
 	info_1 = "";
 	info_2 = "";
 	filelist_it = filelist.end();
+	keyPressed = CMoviePlayerGui::PLUGIN_PLAYSTATE_NORMAL;
+	isLuaPlay = false;
 }
 
 void CMoviePlayerGui::cutNeutrino()
@@ -334,6 +336,12 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		is_file_player = true;
 		PlayFile();
 	}
+	else if (actionKey == "http_lua") {
+		isHTTP = true;
+		isLuaPlay = true;
+		is_file_player = true;
+		PlayFile();
+	}
 	else {
 		return menu_return::RETURN_REPAINT;
 	}
@@ -378,7 +386,7 @@ void CMoviePlayerGui::updateLcd()
 	std::string lcd;
 	std::string name;
 
-	if (isMovieBrowser && strlen(p_movie_info->epgTitle.c_str()) && strncmp(p_movie_info->epgTitle.c_str(), "not", 3))
+	if (isMovieBrowser && p_movie_info && !p_movie_info->epgTitle.empty() && p_movie_info->epgTitle.size() && strncmp(p_movie_info->epgTitle.c_str(), "not", 3))
 		name = p_movie_info->epgTitle;
 	else
 		name = pretty_name;
@@ -536,6 +544,7 @@ void CMoviePlayerGui::ClearFlags()
 	isMovieBrowser = false;
 	isBookmark = false;
 	isHTTP = false;
+	isLuaPlay = false;
 	isUPNP = false;
 	isWebTV = false;
 	isYT = false;
@@ -1057,6 +1066,7 @@ void CMoviePlayerGui::PlayFileLoop(void)
 	int eof = 0;
 #endif
 	bool at_eof = !(playstate >= CMoviePlayerGui::PLAY);;
+	keyPressed = CMoviePlayerGui::PLUGIN_PLAYSTATE_NORMAL;
 	while (playstate >= CMoviePlayerGui::PLAY)
 	{
 #ifdef ENABLE_GRAPHLCD
@@ -1145,6 +1155,15 @@ void CMoviePlayerGui::PlayFileLoop(void)
 			g_PluginList->startPlugin_by_name(g_settings.movieplayer_plugin.c_str ());
 		} else if (msg == (neutrino_msg_t) g_settings.mpkey_stop) {
 			playstate = CMoviePlayerGui::STOPPED;
+			keyPressed = CMoviePlayerGui::PLUGIN_PLAYSTATE_STOP;
+			ClearQueue();
+		} else if (isLuaPlay && (msg == (neutrino_msg_t) CRCInput::RC_right)) {
+			playstate = CMoviePlayerGui::STOPPED;
+			keyPressed = CMoviePlayerGui::PLUGIN_PLAYSTATE_NEXT;
+			ClearQueue();
+		} else if (isLuaPlay && (msg == (neutrino_msg_t) CRCInput::RC_left)) {
+			playstate = CMoviePlayerGui::STOPPED;
+			keyPressed = CMoviePlayerGui::PLUGIN_PLAYSTATE_PREV;
 			ClearQueue();
 		} else if ((!filelist.empty() && msg == (neutrino_msg_t) CRCInput::RC_ok)) {
 			EnableClockAndMute(false);

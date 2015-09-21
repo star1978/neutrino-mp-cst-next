@@ -33,6 +33,9 @@ extern "C" {
 #include <configfile.h>
 #include <vector>
 
+#define LUA_API_VERSION_MAJOR 1
+#define LUA_API_VERSION_MINOR 2
+
 /* this is stored as userdata in the lua_State */
 struct CLuaData
 {
@@ -53,6 +56,10 @@ class CLuaMenuChangeObserver : public CChangeObserver
 		bool changeNotify(lua_State *, const std::string &, const std::string &, void *);
 };
 
+typedef std::pair<lua_Integer, CMenuItem*> itemmap_pair_t;
+typedef std::map<lua_Integer, CMenuItem*> itemmap_t;
+typedef itemmap_t::iterator itemmap_iterator_t;
+
 class CLuaMenu
 {
 	public:
@@ -61,6 +68,7 @@ class CLuaMenu
 		std::list<CLuaMenuItem> items;
 		std::list<CMenuTarget *> targets;
 		std::list<void *> tofree;
+		itemmap_t itemmap;
 		CLuaMenu();
 		~CLuaMenu();
 };
@@ -235,6 +243,7 @@ private:
 	static int MenuHide(lua_State *L);
 	static int MenuExec(lua_State *L);
 	static CLuaMenu *MenuCheck(lua_State *L, int n);
+	static int MenuSetActive(lua_State *L);
 
 	void HintboxRegister(lua_State *L);
 	static int HintboxNew(lua_State *L);
@@ -260,12 +269,14 @@ private:
 	static int CWindowGetFooterHeight(lua_State *L);
 	static int CWindowGetHeaderHeight_dep(lua_State *L); // function 'header_height' is deprecated
 	static int CWindowGetFooterHeight_dep(lua_State *L); // function 'footer_height' is deprecated
+	static int CWindowSetCenterPos(lua_State *L);
 	static int CWindowDelete(lua_State *L);
 
 	static CLuaSignalBox *SignalBoxCheck(lua_State *L, int n);
 	static void SignalBoxRegister(lua_State *L);
 	static int SignalBoxNew(lua_State *L);
 	static int SignalBoxPaint(lua_State *L);
+	static int SignalBoxSetCenterPos(lua_State *L);
 	static int SignalBoxDelete(lua_State *L);
 
 	static CLuaComponentsText *ComponentsTextCheck(lua_State *L, int n);
@@ -275,6 +286,8 @@ private:
 	static int ComponentsTextHide(lua_State *L);
 	static int ComponentsTextSetText(lua_State *L);
 	static int ComponentsTextScroll(lua_State *L);
+	static int ComponentsTextSetCenterPos(lua_State *L);
+	static int ComponentsTextEnableUTF8(lua_State *L);
 	static int ComponentsTextDelete(lua_State *L);
 
 	static CLuaPicture *CPictureCheck(lua_State *L, int n);
@@ -283,6 +296,7 @@ private:
 	static int CPicturePaint(lua_State *L);
 	static int CPictureHide(lua_State *L);
 	static int CPictureSetPicture(lua_State *L);
+	static int CPictureSetCenterPos(lua_State *L);
 	static int CPictureDelete(lua_State *L);
 
 	static CLuaConfigFile *LuaConfigFileCheck(lua_State *L, int n);
@@ -303,6 +317,8 @@ private:
 	static bool tableLookup(lua_State*, const char*, lua_Unsigned&);
 	static bool tableLookup(lua_State*, const char*, void**);
 	static bool tableLookup(lua_State*, const char*, bool &value);
+
+	static int checkVersion(lua_State *L);
 };
 
 #endif /* _LUAINSTANCE_H */

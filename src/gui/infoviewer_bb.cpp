@@ -598,9 +598,9 @@ void CInfoViewerBB::showIcon_Resolution()
 		}
 		if (g_settings.infobar_show_res == 1) {//show simple resolution icon on infobar
 			videoDecoder->getPictureInfo(xres, yres, framerate);
-			if (yres > 704)
+			if (yres > 576)
 				icon_name = NEUTRINO_ICON_RESOLUTION_HD;
-			else if (yres >= 288)
+			else if (yres > 0)
 				icon_name = NEUTRINO_ICON_RESOLUTION_SD;
 			else
 				icon_name = NEUTRINO_ICON_RESOLUTION_000;
@@ -861,7 +861,8 @@ void CInfoViewerBB::showIcon_CA_Status(int notfirst)
 void CInfoViewerBB::paintCA_bar(int left, int right)
 {
 	int xcnt = (g_InfoViewer->BoxEndX - g_InfoViewer->ChanInfoX - (g_settings.casystem_frame ? 24 : 0)) / 4;
-//	int ycnt = (bottom_bar_offset - (g_settings.casystem_frame ? 14 : 0)) / 4;
+	int ycnt = (bottom_bar_offset - (g_settings.casystem_frame ? 14 : 0)) / 4;
+
 	if (right)
 		right = xcnt - ((right/4)+1);
 	if (left)
@@ -874,15 +875,27 @@ void CInfoViewerBB::paintCA_bar(int left, int right)
 			// shadow
 			frameBuffer->paintBox(g_InfoViewer->ChanInfoX + 14, g_InfoViewer->BoxEndY + 4, g_InfoViewer->BoxEndX - 6 , g_InfoViewer->BoxEndY + bottom_bar_offset - 6 , COL_INFOBAR_SHADOW_PLUS_0 , RADIUS_SMALL, CORNER_ALL);
 			// ca bar
-			frameBuffer->paintBox(g_InfoViewer->ChanInfoX + 11, g_InfoViewer->BoxEndY + 1, g_InfoViewer->BoxEndX - 11, g_InfoViewer->BoxEndY + bottom_bar_offset - 11, COL_INFOBAR_PLUS_0        , RADIUS_SMALL, CORNER_ALL);
+			frameBuffer->paintBox(g_InfoViewer->ChanInfoX + 11, g_InfoViewer->BoxEndY + 1, g_InfoViewer->BoxEndX - 11, g_InfoViewer->BoxEndY + bottom_bar_offset - 11, COL_INFOBAR_CASYSTEM_PLUS_0, RADIUS_SMALL, CORNER_ALL);
 			// highlighed frame
-			frameBuffer->paintBoxFrame(g_InfoViewer->ChanInfoX + 10, g_InfoViewer->BoxEndY, g_InfoViewer->BoxEndX - g_InfoViewer->ChanInfoX - 2*10, bottom_bar_offset - 10, 1, COL_INFOBAR_PLUS_3, RADIUS_SMALL, CORNER_ALL);
+			frameBuffer->paintBoxFrame(g_InfoViewer->ChanInfoX + 10, g_InfoViewer->BoxEndY, g_InfoViewer->BoxEndX - g_InfoViewer->ChanInfoX - 2*10, bottom_bar_offset - 10, 1, COL_INFOBAR_CASYSTEM_PLUS_2, RADIUS_SMALL, CORNER_ALL);
 		}
 		else
-			frameBuffer->paintBox(g_InfoViewer->ChanInfoX + 12 + (right*4), g_InfoViewer->BoxEndY + 2, g_InfoViewer->BoxEndX - 12 - (left*4), g_InfoViewer->BoxEndY + bottom_bar_offset - 12, COL_INFOBAR_PLUS_0);
+			frameBuffer->paintBox(g_InfoViewer->ChanInfoX + 12 + (right*4), g_InfoViewer->BoxEndY + 2, g_InfoViewer->BoxEndX - 12 - (left*4), g_InfoViewer->BoxEndY + bottom_bar_offset - 12, COL_INFOBAR_CASYSTEM_PLUS_0);
 	}
 	else
-		frameBuffer->paintBox(g_InfoViewer->ChanInfoX + (right*4), g_InfoViewer->BoxEndY, g_InfoViewer->BoxEndX - (left*4), g_InfoViewer->BoxEndY + bottom_bar_offset, COL_INFOBAR_PLUS_0);
+		frameBuffer->paintBox(g_InfoViewer->ChanInfoX + (right*4), g_InfoViewer->BoxEndY, g_InfoViewer->BoxEndX - (left*4), g_InfoViewer->BoxEndY + bottom_bar_offset, COL_INFOBAR_CASYSTEM_PLUS_0);
+
+	if (!g_settings.casystem_dotmatrix) //don't show dotmatrix
+		return;
+
+	if (left)
+		left -= 1;
+
+	for (int i = 0  + right; i < xcnt - left; i++) {
+		for (int j = 0; j < ycnt; j++) {
+			frameBuffer->paintBoxRel((g_InfoViewer->ChanInfoX + (g_settings.casystem_frame ? 14 : 2)) + i*4, g_InfoViewer->BoxEndY + (g_settings.casystem_frame ? 4 : 2) + j*4, 2, 2, COL_INFOBAR_PLUS_1);
+		}
+	}
 }
 
 void CInfoViewerBB::changePB()

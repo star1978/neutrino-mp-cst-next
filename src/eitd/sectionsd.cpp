@@ -134,8 +134,11 @@ OpenThreads::Mutex filter_mutex;
 static CTimeThread threadTIME;
 static CEitThread threadEIT;
 static CCNThread threadCN;
+
+#ifdef ENABLE_VIASATEPG
 // ViaSAT uses pid 0x39 instead of 0x12
 static CEitThread threadVSEIT("viasatThread", 0x39);
+#endif
 
 #ifdef ENABLE_FREESATEPG
 static CFreeSatThread threadFSEIT;
@@ -837,7 +840,10 @@ static void wakeupAll()
 {
 	threadCN.change(0);
 	threadEIT.change(0);
+#ifdef ENABLE_VIASATEPG
 	threadVSEIT.change(0);
+#endif
+
 #ifdef ENABLE_FREESATEPG
 	threadFSEIT.change(0);
 #endif
@@ -960,7 +966,9 @@ static void commandserviceChanged(int connfd, char *data, const unsigned dataLen
 		threadCN.setCurrentService(messaging_current_servicekey);
 		threadEIT.setDemux(cmd->dnum);
 		threadEIT.setCurrentService(uniqueServiceKey /*messaging_current_servicekey*/);
+#ifdef ENABLE_VIASATEPG
 		threadVSEIT.setCurrentService(messaging_current_servicekey);
+#endif
 #ifdef ENABLE_FREESATEPG
 		threadFSEIT.setCurrentService(messaging_current_servicekey);
 #endif
@@ -2190,6 +2198,7 @@ bool CEitManager::Start()
 		ntp_system_cmd_prefix = find_executable("ntpd");
 		if (!ntp_system_cmd_prefix.empty()){
 			ntp_system_cmd_prefix += " -n -q -p ";
+			ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 		}
 		else{
 			printf("[sectionsd] NTP Error: time sync not possible, ntpdate/ntpd not found\n");
@@ -2199,7 +2208,7 @@ bool CEitManager::Start()
 
 	printf("[sectionsd] Caching: %d days, %d hours Extended Text, max %d events, Events are old %d hours after end time\n",
 		config.epg_cache, config.epg_extendedcache, config.epg_max_events, config.epg_old_events);
-	printf("[sectionsd] NTP: %s, server %s, command %s\n", ntpenable ? "enabled" : "disabled", ntpserver.c_str(), ntp_system_cmd_prefix.c_str());
+	printf("[sectionsd] NTP: %s, command %s\n", ntpenable ? "enabled" : "disabled", ntp_system_cmd.c_str());
 
 	xml_epg_filter = readEPGFilter();
 
@@ -2255,7 +2264,9 @@ printf("SIevent size: %d\n", (int)sizeof(SIevent));
 	threadTIME.Start();
 	threadEIT.Start();
 	threadCN.Start();
+#ifdef ENABLE_VIASATEPG
 	threadVSEIT.Start();
+#endif
 
 #ifdef ENABLE_FREESATEPG
 	threadFSEIT.Start();
@@ -2294,7 +2305,9 @@ printf("SIevent size: %d\n", (int)sizeof(SIevent));
 	threadEIT.StopRun();
 	threadCN.StopRun();
 	threadTIME.StopRun();
+#ifdef ENABLE_VIASATEPG
 	threadVSEIT.StopRun();
+#endif
 #ifdef ENABLE_SDT
 	threadSDT.StopRun();
 #endif
@@ -2323,9 +2336,10 @@ printf("SIevent size: %d\n", (int)sizeof(SIevent));
 
 	xprintf("join CN\n");
 	threadCN.Stop();
-
+#ifdef ENABLE_VIASATEPG
 	xprintf("join VSEIT\n");
 	threadVSEIT.Stop();
+#endif
 
 #ifdef ENABLE_SDT
 	xprintf("join SDT\n");
@@ -2345,7 +2359,7 @@ printf("SIevent size: %d\n", (int)sizeof(SIevent));
 }
 
 /* was: commandAllEventsChannelID sendAllEvents */
-void CEitManager::getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search, std::string search_text,bool all_chann)
+void CEitManager::getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search, std::string search_text,bool all_chann, int genre,int fsk)
 {
 	dprintf("sendAllEvents for " PRINTF_CHANNEL_ID_TYPE "\n", serviceUniqueKey);
 	if(!eList.empty() && search == 0)//skip on search mode
@@ -2385,6 +2399,22 @@ void CEitManager::getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEve
 					std::string eExtendedText = (*e)->getExtendedText();
 					std::transform(eExtendedText.begin(), eExtendedText.end(), eExtendedText.begin(), tolower);
 					copy = (eExtendedText.find(search_text) != std::string::npos);
+				}
+				if(copy && genre != 0xFF)
+				{
+					if((*e)->classifications.content==0)
+						copy=false;
+					if(copy && ((*e)->classifications.content < (genre & 0xf0 ) || (*e)->classifications.content > genre))
+						copy=false;
+				}
+				if(copy && fsk != 0)
+				{
+					if(fsk<0)
+					{
+						if( (*e)->getFSK() > abs(fsk))
+							copy=false;
+					}else if( (*e)->getFSK() < fsk)
+						copy=false;
 				}
 			}
 			if(copy) {
