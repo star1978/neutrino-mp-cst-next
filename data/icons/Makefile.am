@@ -2,6 +2,7 @@ installdir = $(ICONSDIR)
 
 locale = \
 	locale/deutsch.png \
+	locale/russkij.png \
 	locale/english.png
 
 locale_unmaintained = \
@@ -15,7 +16,6 @@ locale_unmaintained = \
 	locale/unmaintained/nederlands.png \
 	locale/unmaintained/polski.png \
 	locale/unmaintained/portugues.png \
-	locale/unmaintained/russkij.png \
 	locale/unmaintained/slovak.png \
 	locale/unmaintained/suomi.png \
 	locale/unmaintained/svenska.png
