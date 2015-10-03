@@ -115,7 +115,7 @@ bool CScreenShot::GetData()
 bool CScreenShot::Start(const std::string custom_cmd)
 {
 #if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
-	std::string cmd = "/bin/grab ";
+	std::string cmd = "/usr/bin/grab ";
 	if (get_osd && !get_video)
 		cmd += "-o ";
 	else if (!get_osd && get_video)
@@ -138,7 +138,7 @@ bool CScreenShot::Start(const std::string custom_cmd)
 	}
 
 	if (!custom_cmd.empty())
-		cmd = "/bin/grab " + custom_cmd;
+		cmd = "/usr/bin/grab " + custom_cmd;
 		
 	cmd += " '";
 	cmd += filename;
