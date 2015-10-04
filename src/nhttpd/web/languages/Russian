@@ -541,7 +541,7 @@ live.timer-sync.status=Состояние
 
 =========INFO
 info.help=Помощь
-info.About=О
+info.About=О yWeb
 info.check_for_updates=Проверить на обновления
 info.your_version=Твоя версия
 info.actual_version=Текущая версия
