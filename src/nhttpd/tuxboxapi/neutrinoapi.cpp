@@ -65,7 +65,7 @@ extern CZapitClient::SatelliteList satList;
 bool _initialize_iso639_map(void)
 {
 	std::string s, t, u, v;
-	std::ifstream in("/share/iso-codes/iso-639.tab");
+	std::ifstream in("/usr/share/iso-codes/iso-639.tab");
 	if (in.is_open())
 	{
 		while (in.peek() == '#')
