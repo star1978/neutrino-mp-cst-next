@@ -33,6 +33,8 @@
 #include <gui/widget/keyboard_input.h>
 #include <gui/filebrowser.h>
 #include <gui/movieplayer.h>
+#include <gui/infoclock.h>
+#include <driver/neutrinofonts.h>
 #include <driver/pictureviewer/pictureviewer.h>
 #include <neutrino.h>
 #include <zapit/types.h>
@@ -261,12 +263,16 @@ static void set_lua_variables(lua_State *L)
 	};
 
 	/* screen offsets, exported as e.g. SCREEN['END_Y'] */
+	lua_Integer xRes = (lua_Integer)CFrameBuffer::getInstance()->getScreenWidth(true);
+	lua_Integer yRes = (lua_Integer)CFrameBuffer::getInstance()->getScreenHeight(true);
 	table_key screenopts[] =
 	{
 		{ "OFF_X", g_settings.screen_StartX },
 		{ "OFF_Y", g_settings.screen_StartY },
 		{ "END_X", g_settings.screen_EndX },
 		{ "END_Y", g_settings.screen_EndY },
+		{ "X_RES", xRes },
+		{ "Y_RES", yRes },
 		{ NULL, 0 }
 	};
 	table_key menureturn[] =
@@ -294,6 +300,29 @@ static void set_lua_variables(lua_State *L)
 		{ NULL, 0 }
 	};
 
+	table_key ccomponents[] =
+	{
+		{ "SHADOW_OFF",		(lua_Integer)CC_SHADOW_OFF },
+		{ "SHADOW_ON",		(lua_Integer)CC_SHADOW_ON },
+/*		{ "SHADOW_RIGHT",	(lua_Integer)CC_SHADOW_RIGHT },*/
+/*		{ "SHADOW_BOTTOM",	(lua_Integer)CC_SHADOW_BOTTOM },*/
+		{ "SAVE_SCREEN_YES",	(lua_Integer)CC_SAVE_SCREEN_YES },
+		{ "SAVE_SCREEN_NO",	(lua_Integer)CC_SAVE_SCREEN_NO },
+		{ NULL, 0 }
+	};
+
+	table_key dynfont[] =
+	{
+		{ "STYLE_REGULAR",	(lua_Integer)CNeutrinoFonts::FONT_STYLE_REGULAR },
+		{ "STYLE_BOLD",		(lua_Integer)CNeutrinoFonts::FONT_STYLE_BOLD },
+		{ "STYLE_ITALIC",	(lua_Integer)CNeutrinoFonts::FONT_STYLE_ITALIC },
+		{ "MAX",		(lua_Integer)CNeutrinoFonts::DYNFONTEXT_MAX },
+		{ "MAXIMUM_FONTS",	(lua_Integer)CLuaInstance::DYNFONT_MAXIMUM_FONTS },
+		{ "TO_WIDE",		(lua_Integer)CLuaInstance::DYNFONT_TO_WIDE },
+		{ "TOO_HIGH",		(lua_Integer)CLuaInstance::DYNFONT_TOO_HIGH },
+		{ NULL, 0 }
+	};
+
 	/* list of environment variable arrays to be exported */
 	lua_envexport e[] =
 	{
@@ -304,6 +333,8 @@ static void set_lua_variables(lua_State *L)
 		{ "MENU_RETURN", menureturn },
 		{ "APIVERSION",  apiversion },
 		{ "PLAYSTATE",   playstate },
+		{ "CC",          ccomponents },
+		{ "DYNFONT",     dynfont },
 		{ NULL, NULL }
 	};
 
@@ -342,8 +373,8 @@ static void set_lua_variables(lua_State *L)
 	}
 }
 
-//#define DBG printf
-#define DBG(...)
+//#define DBG1 printf
+#define DBG1(...)
 
 #define lua_boxpointer(L, u) \
 	(*(void **)(lua_newuserdata(L, sizeof(void *))) = (u))
@@ -413,6 +444,18 @@ void CLuaInstance::functionDeprecated(lua_State *L, const char* oldFunc, const c
 					ar.short_src, ar.currentline);
 }
 
+void CLuaInstance::paramDeprecated(lua_State *L, const char* oldParam, const char* newParam)
+{
+	lua_Debug ar;
+	lua_getstack(L, 1, &ar);
+	lua_getinfo(L, "Sl", &ar);
+	printf("[Lua Script] \33[1;31m%s\33[0m %s \33[33m%s\33[0m %s \33[1;33m%s\33[0m.\n                      (%s:%d)\n",
+					g_Locale->getText(LOCALE_LUA_FUNCTION_DEPRECATED1),
+					g_Locale->getText(LOCALE_LUA_PARAMETER_DEPRECATED2), oldParam,
+					g_Locale->getText(LOCALE_LUA_FUNCTION_DEPRECATED3), newParam,
+					ar.short_src, ar.currentline);
+}
+
 lua_Unsigned CLuaInstance::checkMagicMask(lua_Unsigned &col)
 {
 	if ((col & MAGIC_MASK) == MAGIC_COLOR)
@@ -476,6 +519,7 @@ void CLuaInstance::runScript(const char *fileName, std::vector<std::string> *arg
 		DisplayErrorMessage(lua_tostring(lua, -1), "Lua Script Error:");
 		if (error_string)
 			*error_string = std::string(lua_tostring(lua, -1));
+		g_Zapit->setStandby(false);
 	}
 }
 
@@ -518,7 +562,13 @@ void CLuaInstance::abortScript()
 
 const luaL_Reg CLuaInstance::methods[] =
 {
+	{ "GetRevision", CLuaInstance::GetRevision },
 	{ "PaintBox", CLuaInstance::PaintBox },
+	{ "paintHLine", CLuaInstance::paintHLineRel },
+	{ "paintVLine", CLuaInstance::paintVLineRel },
+	{ "saveScreen", CLuaInstance::saveScreen },
+	{ "restoreScreen", CLuaInstance::restoreScreen },
+	{ "deleteSavedScreen", CLuaInstance::deleteSavedScreen },
 	{ "RenderString", CLuaInstance::RenderString },
 	{ "PaintIcon", CLuaInstance::PaintIcon },
 	{ "GetInput", CLuaInstance::GetInput },
@@ -529,6 +579,7 @@ const luaL_Reg CLuaInstance::methods[] =
 	{ "setBlank", CLuaInstance::setBlank },
 	{ "ShowPicture", CLuaInstance::ShowPicture },
 	{ "StopPicture", CLuaInstance::StopPicture },
+	{ "zapitSetStandby", CLuaInstance::zapitSetStandby },
 	{ "Blit", CLuaInstance::Blit },
 	{ "GetLanguage", CLuaInstance::GetLanguage },
 	{ "runScript", CLuaInstance::runScriptExt },
@@ -537,6 +588,8 @@ const luaL_Reg CLuaInstance::methods[] =
 	{ "strSub", CLuaInstance::strSub },
 	{ "checkVersion", CLuaInstance::checkVersion },
 	{ "createChannelIDfromUrl", CLuaInstance::createChannelIDfromUrl },
+	{ "enableInfoClock", CLuaInstance::enableInfoClock },
+	{ "getDynFont", CLuaInstance::getDynFont },
 	{ NULL, NULL }
 };
 
@@ -620,10 +673,88 @@ int CLuaInstance::NewWindow(lua_State *L)
 	return 1;
 }
 
+int CLuaInstance::saveScreen(lua_State *L)
+{
+	int x, y, w, h;
+	fb_pixel_t* buf;
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+	x = luaL_checkint(L, 2);
+	y = luaL_checkint(L, 3);
+	w = luaL_checkint(L, 4);
+	h = luaL_checkint(L, 5);
+
+	buf = W->fbwin->saveScreen(x, y, w, h);
+
+	lua_Integer id = W->screenmap.size() + 1;
+	W->screenmap.insert(screenmap_pair_t(id, buf));
+	lua_pushinteger(L, id);
+	return 1;
+}
+
+int CLuaInstance::restoreScreen(lua_State *L)
+{
+	int x, y, w, h, id;
+	fb_pixel_t* buf = NULL;
+	bool del;
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+	x = luaL_checkint(L, 2);
+	y = luaL_checkint(L, 3);
+	w = luaL_checkint(L, 4);
+	h = luaL_checkint(L, 5);
+	id = luaL_checkint(L, 6);
+	del = _luaL_checkbool(L, 7);
+
+	for (screenmap_iterator_t it = W->screenmap.begin(); it != W->screenmap.end(); ++it) {
+		if (it->first == id) {
+			buf = it->second;
+			if (del)
+				it->second = NULL;
+			break;
+		}
+	}
+	if (buf != NULL)
+		W->fbwin->restoreScreen(x, y, w, h, buf, del);
+	return 0;
+}
+
+int CLuaInstance::deleteSavedScreen(lua_State *L)
+{
+	int id;
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+	id = luaL_checkint(L, 2);
+
+	for (screenmap_iterator_t it = W->screenmap.begin(); it != W->screenmap.end(); ++it) {
+		if (it->first == id) {
+			if (it->second != NULL) {
+				delete[] it->second;
+				it->second = NULL;
+			}
+			break;
+		}
+	}
+	return 0;
+}
+
+int CLuaInstance::GetRevision(lua_State *L)
+{
+	unsigned int ret = 0;
+#if HAVE_COOL_HARDWARE
+	ret = cs_get_revision();
+#endif
+	lua_pushinteger(L, ret);
+	return 1;
+}
+
 int CLuaInstance::PaintBox(lua_State *L)
 {
 	int count = lua_gettop(L);
-	DBG("CLuaInstance::%s %d\n", __func__, count);
+	DBG1("CLuaInstance::%s %d\n", __func__, count);
 	int x, y, w, h, radius = 0, corner = CORNER_ALL;
 	unsigned int c;
 
@@ -634,8 +765,14 @@ int CLuaInstance::PaintBox(lua_State *L)
 	y = luaL_checkint(L, 3);
 	w = luaL_checkint(L, 4);
 	h = luaL_checkint(L, 5);
+
+#if HAVE_COOL_HARDWARE
+	c = luaL_checkunsigned(L, 6);
+#else
 	/* luaL_checkint does not like e.g. 0xffcc0000 on powerpc (returns INT_MAX) instead */
 	c = (unsigned int)luaL_checknumber(L, 6);
+#endif
+
 	if (count > 6)
 		radius = luaL_checkint(L, 7);
 	if (count > 7)
@@ -654,9 +791,67 @@ int CLuaInstance::PaintBox(lua_State *L)
 	return 0;
 }
 
+int CLuaInstance::paintHLineRel(lua_State *L)
+{
+	int x, y, dx;
+	unsigned int c;
+
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+	x  = luaL_checkint(L, 2);
+	dx = luaL_checkint(L, 3);
+	y  = luaL_checkint(L, 4);
+
+#if HAVE_COOL_HARDWARE
+	c = luaL_checkunsigned(L, 5);
+#else
+	/* luaL_checkint does not like e.g. 0xffcc0000 on powerpc (returns INT_MAX) instead */
+	c = (unsigned int)luaL_checknumber(L, 5);
+#endif
+	if (x < 0)
+		x = 0;
+	if (y < 0)
+		y = 0;
+	if (dx < 0 || x + dx > W->fbwin->dx)
+		dx = W->fbwin->dx - x;
+	checkMagicMask(c);
+	W->fbwin->paintHLineRel(x, dx, y, c);
+	return 0;
+}
+
+int CLuaInstance::paintVLineRel(lua_State *L)
+{
+	int x, y, dy;
+	unsigned int c;
+
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+	x  = luaL_checkint(L, 2);
+	y  = luaL_checkint(L, 3);
+	dy = luaL_checkint(L, 4);
+
+#if HAVE_COOL_HARDWARE
+	c = luaL_checkunsigned(L, 5);
+#else
+	/* luaL_checkint does not like e.g. 0xffcc0000 on powerpc (returns INT_MAX) instead */
+	c = (unsigned int)luaL_checknumber(L, 5);
+#endif
+	if (x < 0)
+		x = 0;
+	if (y < 0)
+		y = 0;
+	if (dy < 0 || y + dy > W->fbwin->dy)
+		dy = W->fbwin->dy - y;
+	checkMagicMask(c);
+	W->fbwin->paintVLineRel(x, y, dy, c);
+	return 0;
+}
+
 int CLuaInstance::PaintIcon(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	int x, y, h;
 	unsigned int o;
 	const char *fname;
@@ -677,7 +872,7 @@ extern CPictureViewer * g_PicViewer;
 
 int CLuaInstance::DisplayImage(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	int x, y, w, h;
 	const char *fname;
 
@@ -715,6 +910,16 @@ int CLuaInstance::ShowPicture(lua_State *L)
 int CLuaInstance::StopPicture(lua_State */*L*/)
 {
 	CFrameBuffer::getInstance()->stopFrame();
+	return 0;
+}
+
+int CLuaInstance::zapitSetStandby(lua_State *L)
+{
+	bool standby = true;
+	int numargs = lua_gettop(L);
+	if (numargs > 1)
+		standby = _luaL_checkbool(L, 2);
+	g_Zapit->setStandby(standby);
 	return 0;
 }
 
@@ -808,7 +1013,7 @@ int CLuaInstance::strSub(lua_State *L)
 
 int CLuaInstance::GetSize(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	int w = 0, h = 0;
 	const char *fname;
 
@@ -821,11 +1026,12 @@ int CLuaInstance::GetSize(lua_State *L)
 
 int CLuaInstance::RenderString(lua_State *L)
 {
-	int x, y, w, boxh, f, center;
+	int x, y, w, boxh, f, center, id;
+	Font* font = NULL;
 	unsigned int c;
 	const char *text;
 	int numargs = lua_gettop(L);
-	DBG("CLuaInstance::%s %d\n", __func__, numargs);
+	DBG1("CLuaInstance::%s %d\n", __func__, numargs);
 	c = COL_MENUCONTENT_TEXT;
 	boxh = 0;
 	center = 0;
@@ -833,49 +1039,110 @@ int CLuaInstance::RenderString(lua_State *L)
 	CLuaData *W = CheckData(L, 1);
 	if (!W || !W->fbwin)
 		return 0;
-	f = luaL_checkint(L, 2);	/* font number, use FONT_TYPE_XXX in the script */
-	text = luaL_checkstring(L, 3);	/* text */
-	x = luaL_checkint(L, 4);
-	y = luaL_checkint(L, 5);
-	if (numargs > 5)
-		c = luaL_checkint(L, 6);
-	if (numargs > 6)
-		w = luaL_checkint(L, 7);
+
+	int step = 0;
+	bool isDynFont = false;
+	if (lua_isboolean(L, 2)) {
+		if (lua_toboolean(L, 2) == true)
+			isDynFont = true;
+		step = 1;
+	}
+
+	if (!isDynFont) {
+		f = luaL_checkint(L, 2+step);	/* font number, use FONT_TYPE_XXX in the script */
+		if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
+			f = SNeutrinoSettings::FONT_TYPE_MENU;
+		font = g_Font[f];
+	}
+	else {
+		id = luaL_checkint(L, 2+step);	/* dynfont */
+		for (fontmap_iterator_t it = W->fontmap.begin(); it != W->fontmap.end(); ++it) {
+			if (it->first == id) {
+				font = it->second;
+				break;
+			}
+		}
+		if (font == NULL) {
+			printf("[CLuaInstance::%s:%d] no font found\n", __func__, __LINE__);
+			lua_pushinteger(L, 0); /* no font found */
+			return 1;
+		}
+	}
+
+	text = luaL_checkstring(L, 3+step);	/* text */
+	x = luaL_checkint(L, 4+step);
+	y = luaL_checkint(L, 5+step);
+	if (numargs > 5+step)
+#if HAVE_COOL_HARDWARE
+		c = luaL_checkunsigned(L, 6+step);
+#else
+		c = luaL_checkint(L, 6+step);
+#endif
+	if (numargs > 6+step)
+		w = luaL_checkint(L, 7+step);
 	else
 		w = W->fbwin->dx - x;
-	if (numargs > 7)
-		boxh = luaL_checkint(L, 8);
-	if (numargs > 8)
-		center = luaL_checkint(L, 9);
-	if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
-		f = SNeutrinoSettings::FONT_TYPE_MENU;
-	int rwidth = g_Font[f]->getRenderWidth(text);
+	if (numargs > 7+step)
+		boxh = luaL_checkint(L, 8+step);
+	if (numargs > 8+step)
+		center = luaL_checkint(L, 9+step);
+
+	int rwidth = font->getRenderWidth(text);
+
 	if (center) { /* center the text inside the box */
 		if (rwidth < w)
 			x += (w - rwidth) / 2;
 	}
 	checkMagicMask(c);
 	if (boxh > -1) /* if boxh < 0, don't paint string */
-		W->fbwin->RenderString(g_Font[f], x, y, w, text, c, boxh);
+		W->fbwin->RenderString(font, x, y, w, text, c, boxh);
 	lua_pushinteger(L, rwidth); /* return renderwidth */
 	return 1;
 }
 
 int CLuaInstance::getRenderWidth(lua_State *L)
 {
-	int f;
+	int f, id;
+	Font* font = NULL;
 	const char *text;
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 
 	CLuaData *W = CheckData(L, 1);
 	if (!W)
 		return 0;
-	f = luaL_checkint(L, 2);	/* font number, use FONT['xxx'] for FONT_TYPE_xxx in the script */
-	text = luaL_checkstring(L, 3);	/* text */
-	if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
-		f = SNeutrinoSettings::FONT_TYPE_MENU;
 
-	lua_pushinteger(L, (int)g_Font[f]->getRenderWidth(text));
+	int step = 0;
+	bool isDynFont = false;
+	if (lua_isboolean(L, 2)) {
+		if (lua_toboolean(L, 2) == true)
+			isDynFont = true;
+		step = 1;
+	}
+
+	if (!isDynFont) {
+		f = luaL_checkint(L, 2+step);	/* font number, use FONT_TYPE_XXX in the script */
+		if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
+			f = SNeutrinoSettings::FONT_TYPE_MENU;
+		font = g_Font[f];
+	}
+	else {
+		id = luaL_checkint(L, 2+step);	/* dynfont */
+		for (fontmap_iterator_t it = W->fontmap.begin(); it != W->fontmap.end(); ++it) {
+			if (it->first == id) {
+				font = it->second;
+				break;
+			}
+		}
+		if (font == NULL) {
+			printf("[CLuaInstance::%s:%d] no font found\n", __func__, __LINE__);
+			lua_pushinteger(L, 0); /* no font found */
+			return 1;
+		}
+	}
+
+	text = luaL_checkstring(L, 3+step);	/* text */
+
+	lua_pushinteger(L, (int)font->getRenderWidth(text));
 	return 1;
 }
 
@@ -894,7 +1161,7 @@ int CLuaInstance::GetInput(lua_State *L)
 	/* TODO: I'm not sure if this works... */
 	if (msg != CRCInput::RC_timeout && msg > CRCInput::RC_MaxRC)
 	{
-		DBG("CLuaInstance::%s: msg 0x%08" PRIx32 " data 0x%08" PRIx32 "\n", __func__, msg, data);
+		DBG1("CLuaInstance::%s: msg 0x%08" PRIx32 " data 0x%08" PRIx32 "\n", __func__, msg, data);
 		CNeutrinoApp::getInstance()->handleMsg(msg, data);
 	}
 	/* signed int is debatable, but the "big" messages can't yet be handled
@@ -906,23 +1173,63 @@ int CLuaInstance::GetInput(lua_State *L)
 
 int CLuaInstance::FontHeight(lua_State *L)
 {
-	int f;
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	int f, id;
+	Font* font = NULL;
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 
 	CLuaData *W = CheckData(L, 1);
 	if (!W)
 		return 0;
-	f = luaL_checkint(L, 2);	/* font number, use FONT['xxx'] for FONT_TYPE_xxx in the script */
-	if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
-		f = SNeutrinoSettings::FONT_TYPE_MENU;
-	lua_pushinteger(L, (int)g_Font[f]->getHeight());
+
+	int step = 0;
+	bool isDynFont = false;
+	if (lua_isboolean(L, 2)) {
+		if (lua_toboolean(L, 2) == true)
+			isDynFont = true;
+		step = 1;
+	}
+
+	if (!isDynFont) {
+		f = luaL_checkint(L, 2+step);	/* font number, use FONT_TYPE_XXX in the script */
+		if (f >= SNeutrinoSettings::FONT_TYPE_COUNT || f < 0)
+			f = SNeutrinoSettings::FONT_TYPE_MENU;
+		font = g_Font[f];
+	}
+	else {
+		id = luaL_checkint(L, 2+step);	/* dynfont */
+		for (fontmap_iterator_t it = W->fontmap.begin(); it != W->fontmap.end(); ++it) {
+			if (it->first == id) {
+				font = it->second;
+				break;
+			}
+		}
+		if (font == NULL) {
+			printf("[CLuaInstance::%s:%d] no font found\n", __func__, __LINE__);
+			lua_pushinteger(L, 0); /* no font found */
+			return 1;
+		}
+	}
+
+	lua_pushinteger(L, (int)font->getHeight());
 	return 1;
 }
 
 int CLuaInstance::GCWindow(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	CLuaData *w = (CLuaData *)lua_unboxpointer(L, 1);
+
+	if (w && w->fbwin) {
+		for (screenmap_iterator_t it = w->screenmap.begin(); it != w->screenmap.end(); ++it) {
+			if (it->second != NULL)
+				delete[] it->second;
+		}
+		DBG1("CLuaInstance::%s delete screenmap\n", __func__);
+		w->screenmap.clear();
+		w->fontmap.clear();
+	}
+	CNeutrinoFonts::getInstance()->deleteDynFontExtAll();
+
 	delete w->fbwin;
 	w->rcinput = NULL;
 	delete w;
@@ -2045,7 +2352,7 @@ int CLuaInstance::CWindowSetCenterPos(lua_State *L)
 
 int CLuaInstance::CWindowDelete(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	CLuaCWindow *m = CWindowCheck(L, 1);
 	if (!m)
 		return 0;
@@ -2369,7 +2676,7 @@ int CLuaInstance::ComponentsTextEnableUTF8(lua_State *L)
 
 int CLuaInstance::ComponentsTextDelete(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	CLuaComponentsText *m = ComponentsTextCheck(L, 1);
 	if (!m)
 		return 0;
@@ -2454,7 +2761,10 @@ int CLuaInstance::CPictureNew(lua_State *L)
 
 	CLuaPicture **udata = (CLuaPicture **) lua_newuserdata(L, sizeof(CLuaPicture *));
 	*udata = new CLuaPicture();
-	(*udata)->cp = new CComponentsPicture(x, y, dx, dy, image_name, pw, has_shadow, (fb_pixel_t)color_frame, (fb_pixel_t)color_background, (fb_pixel_t)color_shadow, transparency);
+	if (dx == 0 && dy == 0) /* NO_SCALE */
+		(*udata)->cp = new CComponentsPicture(x, y, image_name, pw, has_shadow, (fb_pixel_t)color_frame, (fb_pixel_t)color_background, (fb_pixel_t)color_shadow, transparency);
+	else
+		(*udata)->cp = new CComponentsPicture(x, y, dx, dy, image_name, pw, has_shadow, (fb_pixel_t)color_frame, (fb_pixel_t)color_background, (fb_pixel_t)color_shadow, transparency);
 	(*udata)->parent = pw;
 	luaL_getmetatable(L, "cpicture");
 	lua_setmetatable(L, -2);
@@ -2531,7 +2841,7 @@ int CLuaInstance::CPictureSetCenterPos(lua_State *L)
 
 int CLuaInstance::CPictureDelete(lua_State *L)
 {
-	DBG("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
+	DBG1("CLuaInstance::%s %d\n", __func__, lua_gettop(L));
 	CLuaPicture *m = CPictureCheck(L, 1);
 	if (!m) return 0;
 
@@ -2749,6 +3059,71 @@ int CLuaInstance::createChannelIDfromUrl(lua_State *L)
 
 	lua_pushstring(L, id_str);
 	return 1;
+}
+
+// --------------------------------------------------------------------------------
+
+int CLuaInstance::enableInfoClock(lua_State *L)
+{
+	bool enable = true;
+	int numargs = lua_gettop(L);
+	if (numargs > 1)
+		enable = _luaL_checkbool(L, 2);
+	CInfoClock::getInstance()->enableInfoClock(enable);
+	return 0;
+}
+
+// --------------------------------------------------------------------------------
+
+int CLuaInstance::getDynFont(lua_State *L)
+{
+	int numargs = lua_gettop(L);
+	CLuaData *W = CheckData(L, 1);
+	if (!W || !W->fbwin)
+		return 0;
+
+	if (numargs < 3) {
+		printf("CLuaInstance::%s: not enough arguments (%d, expected 2)\n", __func__, numargs);
+		return 0;
+	}
+
+	lua_Integer fontID = W->fontmap.size();
+	if (fontID >= CNeutrinoFonts::DYNFONTEXT_MAX) {
+		lua_pushnil(L);
+		lua_pushinteger(L, DYNFONT_MAXIMUM_FONTS);
+		return 2;
+	}
+
+	lua_Integer dx = 0, dy = 0, style = CNeutrinoFonts::FONT_STYLE_REGULAR;
+	std::string text="";
+
+	dx = luaL_checkint(L, 2);
+	if (dx > (lua_Integer)CFrameBuffer::getInstance()->getScreenWidth(true)) {
+		lua_pushnil(L);
+		lua_pushinteger(L, DYNFONT_TO_WIDE);
+		return 2;
+	}
+	dy = luaL_checkint(L, 3);
+	if (dy > 100) {
+		lua_pushnil(L);
+		lua_pushinteger(L, DYNFONT_TOO_HIGH);
+		return 2;
+	}
+	if (numargs > 3)
+		text = luaL_checkstring(L, 4);
+	if (numargs > 4) {
+		style = luaL_checkint(L, 5);
+		if (style > CNeutrinoFonts::FONT_STYLE_ITALIC)
+			style = CNeutrinoFonts::FONT_STYLE_REGULAR;
+	}
+
+	Font* f = CNeutrinoFonts::getInstance()->getDynFontExt(dx, dy, fontID, text, style);
+
+	lua_Integer id = fontID + 1;
+	W->fontmap.insert(fontmap_pair_t(id, f));
+	lua_pushinteger(L, id);
+	lua_pushinteger(L, DYNFONT_NO_ERROR);
+	return 2;
 }
 
 // --------------------------------------------------------------------------------
