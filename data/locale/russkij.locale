@@ -175,8 +175,11 @@ ci.inserted CAM в слоте
 ci.removed CAM удалён из слота
 ci.reset Сброс
 ci.reset_standby Сброс после выхода из режима ожидания
+ci.save_pincode Сохранить родительский код
 ci.settings Условный доступ
 ci.timeout Ожидание готовности CI
+ci.tuner Использовать CI только с тюнером:
+ci.use Разрешить CI
 ci.waiting Ожидание ответа от CI
 clock_background Показать фон
 clock_seconds Показать секунды
@@ -504,11 +507,13 @@ flashupdate.checkupdate_internet Поиск новой версии
 flashupdate.checkupdate_local Локальное обновление
 flashupdate.copy_image Копировать образ в рабочую память
 flashupdate.createimage Сохранить образ
-flashupdate.createimage_add_env Добавить в образ
-flashupdate.createimage_add_kernel Добавить в образ
-flashupdate.createimage_add_spare Добавить в образ
-flashupdate.createimage_add_u_boot Добавить в образ
-flashupdate.createimage_add_uldr Добавить в образ
+flashupdate.createimage_add_env Добавить 'env' в образ
+flashupdate.createimage_add_kernel Добавить 'kernel' в  образ
+flashupdate.createimage_add_root1 Добавить 'root1' в образ
+flashupdate.createimage_add_spare Добавить 'spare' в образ
+flashupdate.createimage_add_u_boot Добавить 'u-boot' в образ
+flashupdate.createimage_add_uldr Добавить 'uldr' в образ
+flashupdate.createimage_add_var Добавить 'var' в образ 
 flashupdate.createimage_menu Сохранить текущее ПО
 flashupdate.createimage_options Опции
 flashupdate.createimage_other Создать образ %s ресивера
@@ -919,6 +924,7 @@ lua.boolparam_deprecated3 для Boolean параметр устарел.\n По
 lua.function_deprecated1 Внимание!
 lua.function_deprecated2 Функция
 lua.function_deprecated3 устарела,\n  используете
+lua.parameter_deprecated2 Параметр
 lua.versionscheck1 Ваше Lua API Версия устарела
 lua.versionscheck2 Требуется минимум
 mainmenu.audioplayer Аудио плеер
@@ -1645,6 +1651,7 @@ moviebrowser.copying Копируются метки ждите ...
 moviebrowser.cut Удалить метки из фильма?
 moviebrowser.cut_failed Ошибка при удалении меток. Есть ли метки или свободное место в памяти?
 moviebrowser.cutting Режется фильм, ждите ...
+moviebrowser.delete_all Все помеченные фильмы удалить без подтверждения?
 moviebrowser.delete_info Удаляются файлы, ждите ...
 moviebrowser.delete_screenshot Удалить скриншот?
 moviebrowser.dir Путь
