@@ -68,6 +68,11 @@ MTDUTILSLIBS = \
 	system/mtdutils/lib/libneutrino_system_mtdutils_lib.a
 endif
 
+if ENABLE_LUA
+LUALIBS = \
+	gui/lua/libneutrino_gui_lua.a
+endif
+
 neutrino_LDADD = \
 	daemonc/libneutrino_daemonc.a \
 	gui/bedit/libneutrino_gui_bedit.a \
@@ -80,6 +85,7 @@ neutrino_LDADD = \
 	gui/movieinfo.o \
 	gui/libneutrino_gui2.a \
 	gui/components/libneutrino_gui_components.a \
+	$(LUALIBS) \
 	eitd/libsectionsd.a \
 	gui/volumebar.o \
 	driver/libneutrino_driver.a \
@@ -127,7 +133,9 @@ neutrino_LDADD += -lgif
 else
 neutrino_LDADD += -lungif
 endif
+if ENABLE_LUA
 neutrino_LDADD += @LUA_LIBS@
+endif
 
 if ENABLE_UPNP
 neutrino_LDADD += \
