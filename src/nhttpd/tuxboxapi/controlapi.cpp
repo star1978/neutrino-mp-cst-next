@@ -60,11 +60,11 @@ extern CBouquetManager *g_bouquetManager;
 #if HAVE_DUCKBOX_HARDWARE
 #define EVENTDEV "/dev/input/event0"
 #elif HAVE_SPARK_HARDWARE
-#if BOXMODEL_SPARK7162
+/*#if BOXMODEL_SPARK7162
 #define EVENTDEV "/dev/input/nevis_ir"
-#else
+#else*/
 #define EVENTDEV "/dev/input/event1"
-#endif
+//#endif
 #else
 #define EVENTDEV "/dev/input/input0"
 #endif
