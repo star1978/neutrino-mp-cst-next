@@ -1159,6 +1159,7 @@ menu.hint_key_sort Назначить кнопку сортировки спис
 menu.hint_key_special_active Включение и отключение некоторых специальных клавиш
 menu.hint_key_subchanneldown Назначьте кнопку для переключения на предыдущий подканал
 menu.hint_key_subchannelup Назначьте кнопку для переключения на следующий подканал
+menu.hint_key_timeshift Назначьте кнопку для старта Таймшифт
 menu.hint_key_transponder Назначить кнопку, чтобы показать список каналов для текущего транспондера
 menu.hint_key_tvradiomode Назначить кнопку ТВ <> Радио
 menu.hint_key_unlock Назначить кнопку, чтобы открыть окно, если ресивер заблокирован\nЧтобы разблокировать - 5 сек удерживать "Красную"
@@ -1675,6 +1676,16 @@ moviebrowser.head Просмотр TS-файлов
 moviebrowser.head_filter Фильтровать фильмы по категориям
 moviebrowser.head_playlist Последний запущеный
 moviebrowser.head_recordlist Последний записанный
+moviebrowser.help_button_blue Обновить инфo о фильме
+moviebrowser.help_button_green Окно фильтра отображать
+moviebrowser.help_button_left Изменить вид
+moviebrowser.help_button_menu Открыть главное меню
+moviebrowser.help_button_mute Удалить фильмы
+moviebrowser.help_button_okay Проиграть фильмы
+moviebrowser.help_button_play Фильмы выделить
+moviebrowser.help_button_red Изменить сортировку
+moviebrowser.help_button_right Изменить вид
+moviebrowser.help_button_yellow Поменять активное окно
 moviebrowser.hide_series Скрыть серии
 moviebrowser.hint_copy_onefile 
 moviebrowser.hint_copy_several 
