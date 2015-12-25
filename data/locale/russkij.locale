@@ -490,6 +490,7 @@ filebrowser.prevpage Предыдущая страница
 filebrowser.scan Сканирование каталога
 filebrowser.select Выбор
 filebrowser.showrights Показывать права файлов
+filebrowser.start.dir Стартовый каталог
 filebrowser.sort.date Сортировка по дате
 filebrowser.sort.name Сортировка по имени
 filebrowser.sort.namedirsfirst Сортировка по каталогам
@@ -534,6 +535,8 @@ flashupdate.getupdatefile getting Обновление
 flashupdate.getupdatefileerror Обновление не удалось
 flashupdate.globalprogress Общий прогресс
 flashupdate.head Обновление программного обеспечения
+flashupdate.install_image Установить скаченный образ?
+flashupdate.install_package Установить скаченный пакет?
 flashupdate.md5check Проверка прошивки
 flashupdate.md5sumerror Прошивка без ошибок
 flashupdate.menu_apply_kernel Ядро
@@ -1061,6 +1064,7 @@ menu.hint_fade Затухание окон
 menu.hint_fan_speed Скорость вращения вентилятора
 menu.hint_filebrowser_denydirectoryleave Использование директории
 menu.hint_filebrowser_showrights Показать права доступа к файлам в файловом браузере
+menu.hint_filebrowser_startdir Создать стартовый каталог
 menu.hint_fileplay Воспроизведение видео-файлов
 menu.hint_filesystem_is_utf8 Выбрать кодировку
 menu.hint_font_gui Выберите файл шрифта для GUI
@@ -1138,7 +1142,6 @@ menu.hint_key_mprewind Назначить кнопку перемотки наз
 menu.hint_key_mpstop Назначить кнопку, чтобы остановить запись/воспроизведение файлов
 menu.hint_key_mpsubtitle Назначить кнопку, чтобы показать выбор субтитров
 menu.hint_key_mptime Назначить кнопку, чтобы показать время воспроизведения
-menu.hint_key_mptimeshift Назначить кнопку, чтобы начать таймшифт
 menu.hint_key_pagedown Назначить кнопку, чтобы показать следующую страницу
 menu.hint_key_pageup Назначить кнопку, чтобы показать предыдущую страницу
 menu.hint_key_pic_mode_active Отключить/включить кнопку для формата экрана
@@ -1656,7 +1659,8 @@ moviebrowser.delete_all Все помеченные фильмы удалить 
 moviebrowser.delete_info Удаляются файлы, ждите ...
 moviebrowser.delete_screenshot Удалить скриншот?
 moviebrowser.dir Путь
-moviebrowser.dir_head Дополнительные пути
+moviebrowser.directories Каталоги
+moviebrowser.directories_additional Дополнительные каталоги
 moviebrowser.edit_book Изменить закладку
 moviebrowser.edit_book_name_info1 Введите новое имя закладки
 moviebrowser.edit_book_name_info2 Имя info2
@@ -2090,8 +2094,8 @@ reset_channels Удалить все каналы
 reset_confirm Вы уверены?
 reset_removed Удалить отключенные каналы
 reset_settings Сброс настроек к значениям по умолчанию
-satsetup.auto_scan Авто-сканирование спутника
-satsetup.auto_scan_all Авто-сканирование нескольких спутников
+satsetup.auto_scan Автоматически выбрано %s
+satsetup.auto_scan_all Авто-сканирование всех спутников
 satsetup.cable Сканирование Кабельной сети
 satsetup.cable_nid Сетевой ID
 satsetup.comm_input Фикс-вход
