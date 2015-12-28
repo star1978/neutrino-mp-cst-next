@@ -9,6 +9,8 @@ install_DATA = \
 	Gray.theme \
 	Grey-Blue.theme \
 	MonoChrom.theme \
+	Neutrino-3.0.theme \
 	Olive.theme \
+	Olive-3.0.theme \
 	Red.theme \
 	VirginMedia.theme

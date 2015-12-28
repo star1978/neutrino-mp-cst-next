@@ -98,12 +98,12 @@ int CLuaInstCCText::CCTextNew(lua_State *L)
 	if (font_text >= SNeutrinoSettings::FONT_TYPE_COUNT || font_text < 0)
 		font_text = SNeutrinoSettings::FONT_TYPE_MENU;
 
-	bool has_shadow = false;
-	if (!tableLookup(L, "has_shadow", has_shadow)) {
+	int shadow_mode = CC_SHADOW_OFF;
+	if (!tableLookup(L, "has_shadow", shadow_mode)) {
 		std::string tmp1 = "false";
 		if (tableLookup(L, "has_shadow", tmp1))
 			paramBoolDeprecated(L, tmp1.c_str());
-		has_shadow = (tmp1 == "true" || tmp1 == "1" || tmp1 == "yes");
+		shadow_mode = (tmp1 == "true" || tmp1 == "1" || tmp1 == "yes");
 	}
 
 	tableLookup(L, "color_text",   color_text);
@@ -142,7 +142,7 @@ int CLuaInstCCText::CCTextNew(lua_State *L)
 
 	CLuaCCText **udata = (CLuaCCText **) lua_newuserdata(L, sizeof(CLuaCCText *));
 	*udata = new CLuaCCText();
-	(*udata)->ct = new CComponentsText(x, y, dx, dy, text, mode, g_Font[font_text], pw, has_shadow, (fb_pixel_t)color_text, (fb_pixel_t)color_frame, (fb_pixel_t)color_body, (fb_pixel_t)color_shadow);
+	(*udata)->ct = new CComponentsText(x, y, dx, dy, text, mode, g_Font[font_text], 0 /*TODO: style not passed*/, pw, shadow_mode, (fb_pixel_t)color_text, (fb_pixel_t)color_frame, (fb_pixel_t)color_body, (fb_pixel_t)color_shadow);
 	(*udata)->parent = pw;
 	(*udata)->mode = mode;
 	(*udata)->font_text = font_text;
@@ -174,18 +174,16 @@ int CLuaInstCCText::CCTextHide(lua_State *L)
 	CLuaCCText *D = CCTextCheck(L, 1);
 	if (!D) return 0;
 
-	bool no_restore = false;
-	if (!tableLookup(L, "no_restore", no_restore)) {
-		std::string tmp = "false";
-		if (tableLookup(L, "no_restore", tmp))
-			paramBoolDeprecated(L, tmp.c_str());
-		no_restore = (tmp == "true" || tmp == "1" || tmp == "yes");
-	}
+	bool tmp1 = false;
+	std::string tmp2 = "false";
+	if ((tableLookup(L, "no_restore", tmp1)) || (tableLookup(L, "no_restore", tmp2)))
+		printf("[%s:hide] Warning, obsolete parameter in use, please remove!\n", "ctext");
+
 	if (D->parent) {
 		D->ct->setText("", D->mode, g_Font[D->font_text]);
 		D->ct->paint();
 	} else
-		D->ct->hide(no_restore);
+		D->ct->hide();
 	return 0;
 }
 
