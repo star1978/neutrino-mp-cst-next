@@ -1707,15 +1707,15 @@ moviebrowser.help_button_red Sortierung ändern
 moviebrowser.help_button_right Ansicht ändern
 moviebrowser.help_button_yellow Aktives Fenster wechseln
 moviebrowser.hide_series Verstecke Serien
-moviebrowser.hint_copy_onefile 
-moviebrowser.hint_copy_several 
-moviebrowser.hint_cut 
+moviebrowser.hint_copy_onefile Erstellt aus den Sprungmarken des Films einen neuen Film
+moviebrowser.hint_copy_several Erstellt aus den Sprungmarken des Films mehrere neue Filme
+moviebrowser.hint_cut Schneidet die Sprungmarken aus dem Film und erstellt einen neuen Film
 moviebrowser.hint_jumpbackward Rücksprung in 5 Sekunden\n'0' zum Weitersehen
 moviebrowser.hint_jumpforward Werbung überspringen in 5 Sekunden\n'0' zum Ansehen
 moviebrowser.hint_movieend Filmende in 5 Sekunden\n'0' zum Weitersehen
 moviebrowser.hint_newbook_backward Neue Wiederholung gestartet.\n'%s' bestimmt die Endposition, '0' bricht ab.
 moviebrowser.hint_newbook_forward Neuer Werbesprung gestartet.\n'%s' bestimmt die Endposition, '0' bricht ab.
-moviebrowser.hint_truncate 
+moviebrowser.hint_truncate Entfernt den Filmteil hinter der Filmende-Markierung
 moviebrowser.info_audio Audio
 moviebrowser.info_channel Kanal
 moviebrowser.info_file Datei
@@ -1951,6 +1951,8 @@ opkg.messagebox.size.error Nicht genügend freier Speicher für Paketinstallatio
 opkg.messagebox.updates.available Aktualisierungen verfügbar!
 opkg.success.install Installation erfolgreich!\nNeustart von Neutrino kann erforderlich sein. Jetzt neu starten?
 opkg.title Paketverwaltung
+opkg.update.check Prüfe auf Updates...
+opkg.update.reading_lists Paketlisten werden eingelesen...
 opkg.upgrade Installierte Pakete aktualisieren
 opkg.warning_3rdparty_packages Drittanbieter-Pakete könnten Ihr System beschädigen! Sind Sie sicher, dieses Paket zu installieren?
 options.default Voreinstellungen benutzen
