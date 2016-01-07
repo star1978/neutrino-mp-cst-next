@@ -68,7 +68,7 @@
 //#define RCDEBUG
 
 #define ENABLE_REPEAT_CHECK
-
+// /dev/input/event0=lirc remote control  /dev/input/event1 frontkeys
 #if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
 #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_IPBOX55) || defined (SPARK) || defined (SPARK7162) || defined (HL101)
 const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/event0", "/dev/input/event1"};
@@ -1573,7 +1573,11 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 			case RC_timeshift:
 				return "timeshift";
 			case RC_mode:
+#if HAVE_SPARK_HARDWARE
+				return "v.format";
+#else
 				return "mode";
+#endif
 			case RC_record:
 				return "record";
 			case RC_pause:
@@ -1604,8 +1608,44 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 				return "analog off";
 			case RC_www:
 				return "www";
+			case RC_find:
+				return "find";
+			case RC_pip:
+				return "pip";
+			case RC_archive:
+				return "archive";
+			case RC_slow:
+				return "slow";
+			case RC_fastforward:
+				return "fast";
 			case RC_playmode:
 				return "play mode";
+			case RC_usb:
+				return "usb";
+			case RC_timer:
+				return "time";
+			case RC_f1:
+				return "f1";
+			case RC_f2:
+				return "f2";
+			case RC_f3:
+				return "f3";
+			case RC_f4:
+				return "f4";
+			case RC_prog1:
+				return "prog1";
+			case RC_prog2:
+				return "prog2";
+			case RC_prog3:
+				return "prog3";
+			case RC_aux:
+#if HAVE_SPARK_HARDWARE
+				return "tv/sat";
+#else
+				return "aux";
+#endif
+			case RC_prog4:
+				return "prog4";
 			case RC_sub:
 				return "sub";
 			case RC_pos:
@@ -1642,6 +1682,11 @@ int CRCInput::translate(int code)
 {
 	switch(code)
 	{
+#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
+		case KEY_EXIT:
+		case KEY_HOME:
+			return RC_home;
+#endif
 		case 0x100: // FIXME -- needed?
 			return RC_up;
 		case 0x101: // FIXME -- needed?
