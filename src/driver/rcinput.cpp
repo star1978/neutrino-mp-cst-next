@@ -69,16 +69,8 @@
 
 #define ENABLE_REPEAT_CHECK
 
-#if HAVE_SPARK_HARDWARE
-/* this relies on event0 being the AOTOM frontpanel driver device
- * TODO: what if another input device is present? */
-const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/nevis_ir", "/dev/input/fulan_fp" , "/dev/input/tdt_rc"};
-#elif HAVE_GENERIC_HARDWARE
-/* the FIFO created by libstb-hal */
-const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/tmp/neutrino.input"};
-#else
-#if HAVE_DUCKBOX_HARDWARE
-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_IPBOX55)
+#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
+#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_IPBOX55) || defined (SPARK) || defined (SPARK7162) || defined (HL101)
 const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/event0", "/dev/input/event1"};
 #else
 const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/event0"};
@@ -86,7 +78,6 @@ const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/event
 #else
 //const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/nevis_ir", "/dev/input/event0"};
 const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {"/dev/input/nevis_ir"};
-#endif
 #endif
 typedef struct input_event t_input_event;
 

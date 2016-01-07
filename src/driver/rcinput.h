@@ -147,18 +147,15 @@ class CRCInput
 		int 		fd_pipe_high_priority[2];
 		int 		fd_pipe_low_priority[2];
 		int         	fd_gamerc;
-#if HAVE_SPARK_HARDWARE
-#define NUMBER_OF_EVENT_DEVICES 3
-#else
-#ifdef HAVE_DUCKBOX_HARDWARE
-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_IPBOX55)
+
+#ifdef HAVE_DUCKBOX_HARDWARE || HAVE_SPARK_HARDWARE
+#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_IPBOX55)|| defined BOXMODEL_HL101
 #define NUMBER_OF_EVENT_DEVICES 2
 #else
 #define NUMBER_OF_EVENT_DEVICES 1
 #endif
 #else
 #define NUMBER_OF_EVENT_DEVICES 1
-#endif
 #endif
 		int         	fd_rc[NUMBER_OF_EVENT_DEVICES];
 		int		fd_keyb;
