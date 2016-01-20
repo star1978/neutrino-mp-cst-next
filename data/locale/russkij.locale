@@ -187,11 +187,23 @@ clock_size_height Высота
 clock_switch_off Скрыть часы
 clock_switch_on Отобразить часы
 color.gradient Цветовой градиент
-color.gradient_c2c Цвет цветового градиента
+color.gradient_a2b Цвет A к B
+color.gradient_b2a Цвет B к A
+color.gradient_d2l тёмный к светлому
+color.gradient_dld тёмный светлый тёмный
+color.gradient_l2d светлый к тёмному
+color.gradient_ldl светлый тёмный светлый
+color.gradient_mode_direction Направление
+color.gradient_mode_direction_hor Горизонтально
+color.gradient_mode_direction_ver Вертикально
+color.gradient_separator_enable Цветовой переход до разделительной линии
 colorchooser.alpha Альфа
 colorchooser.blue Синий
 colorchooser.green Зелёный
 colorchooser.red Красный
+colorchooser.save Сохранить
+colormenu.advanced_mode_off Стандартные опции
+colormenu.advanced_mode_on Расширенные опции
 colormenu.background Фон
 colormenu.clock_textcolor Цвет цифр
 colormenu.contrast_fonts Контрастный шрифт
@@ -810,8 +822,6 @@ imageinfo.version Версия сборки
 inetradio.name Интернет-Радио
 infoviewer.epgnotload Телегид отсутствует
 infoviewer.epgwait Загрузка программы передач
-infoviewer.eventlist Программа передач
-infoviewer.languages Аудио
 infoviewer.motor_moving Позиционирование антены
 infoviewer.next Дальше
 infoviewer.nocurrent Нет информации о текущей передаче
@@ -819,10 +829,8 @@ infoviewer.noepg Программа передач отсутствует
 infoviewer.notavailable Канал недоступен
 infoviewer.now Сейчас
 infoviewer.selecttime Выбор времени
-infoviewer.streaminfo Меню дополнений
 infoviewer.subchan_disp_pos Подканал на дисплее
 infoviewer.subchan_infobar Полная информационная панель
-infoviewer.subservice Дополнительно
 infoviewer.waittime Получение текущего времени
 ipsetup.hint_1 Используйте 0..9, или Up/Down
 ipsetup.hint_2 OK - Сохранить, Exit - Отмена
@@ -1031,8 +1039,9 @@ menu.hint_clock_mode Включить или отключить часы
 menu.hint_clock_seconds Отображение секунд в часах
 menu.hint_clock_size Установите размер часов
 menu.hint_clock_textcolor Настройка цвета цифр
-menu.hint_color_gradient Вкл/выкл цветовых градиентов в различных пунктах меню 
-menu.hint_color_gradient_c2c Включение градиента между двух цветов
+menu.hint_color_gradient Вкл/выкл цветовых градиентов в различных пунктах меню
+menu.hint_color_gradient_direction Установить направление цветового перехода
+menu.hint_color_gradient_separator_enable Переход цвета для разделительной линии включить/выключить
 menu.hint_colored_events Используйте различные цвета для текущего или следующего события
 menu.hint_colored_events_textcolor Измените цвет события в программе передач и инфопанеле
 menu.hint_colors Настройка цветов GUI
@@ -1093,6 +1102,7 @@ menu.hint_inactive_textcolor Цвет текста неактивных окон
 menu.hint_inet_radio Слушать радио из Интернета
 menu.hint_info Информация об имидже, о ресивере, о текущем потоке
 menu.hint_infobar_back Изменение цвета фона информационной панели
+menu.hint_infobar_buttons_usertitle Определение пользователем названия цветных кнопок.
 menu.hint_infobar_casys Мини-иконка "Кодированный канал". Вкл: Все кодировки, с подсветкой активной, отдельно, только активная кодировка
 menu.hint_infobar_casys_color Выберите цвет фона иконок CA систем
 menu.hint_infobar_casys_dotmatrix Вкл: Иконки CA систем матрично
@@ -1244,6 +1254,8 @@ menu.hint_next Дальше к следующему меню.\nКнопка 'М�
 menu.hint_next_brief Дальше к следующему меню
 menu.hint_numeric_adjust Показывать номера каналов
 menu.hint_opkg Здесь вы можете новые пакеты установить или обновить установленные
+menu.hint_opkg_feed_addresses_edit Изменить адрес feed-server
+menu.hint_opkg_install_local_package Установить пакет с USB-Носителя, локальной папки или сетевого носителя.
 menu.hint_opkg_upgrade Обновляет все установленные пакеты до новейшей доступной версии
 menu.hint_osd Цвета, шрифты, размер экрана. Вид экранного меню, инфопанели и прочее
 menu.hint_osd_language Выберите язык экранного меню
@@ -1395,6 +1407,8 @@ menu.hint_scrambled_message Показывать сообщение "Кодир�
 menu.hint_screen_setup Настройка полей экрана
 menu.hint_screensaver_delay Задайте время (в минутах), после которого заставка должна запустится или выключится
 menu.hint_screensaver_dir Выберите каталог заставки
+menu.hint_screensaver_mode Выберете модус заставки.
+menu.hint_screensaver_random Включить/выключить случаный выбор заставки.
 menu.hint_screensaver_timeout Выберите тайм-аут смены картинок заставки
 menu.hint_screensaver_setup Параметры заставки для режима аудио-плеера и радио
 menu.hint_screenshot_count Когда нет GUI на экране, вы можете сохранить 1-5 скриншотов
@@ -1491,6 +1505,7 @@ messagebox.back Назад
 messagebox.cancel Отмена
 messagebox.discard Отменить изменения?
 messagebox.error Ошибка
+messagebox.feature_not_supported Эта функция не поддерживается.Обращайтесь к производителю програмного обеспечения!
 messagebox.info Информация
 messagebox.no Нет
 messagebox.ok Ok
@@ -1535,6 +1550,7 @@ miscsettings.epg_scan_standby Сканировать EPG в режиме ожи�
 miscsettings.general Общие
 miscsettings.head Расширенные настройки
 miscsettings.infobar Инфопанель
+miscsettings.infobar_buttons_usertitle Пользовательское название цветных кнопок
 miscsettings.infobar_casystem_display Показывать иконки CA систем
 miscsettings.infobar_casystem_dotmatrix Иконки CA систем матрично
 miscsettings.infobar_casystem_frame Иконки CA систем в рамке
@@ -1548,6 +1564,7 @@ miscsettings.infobar_disp_3 Пикон+Название канала+Индик�
 miscsettings.infobar_disp_4 Пикон+Название канала+Номер канала
 miscsettings.infobar_disp_5 Пикон+Уровень сигнала
 miscsettings.infobar_disp_6 Пикон+Номер канала+Уровень сигнала
+miscsettings.infobar_gradient_body Переход цвета в EPG-разделе
 miscsettings.infobar_gradient_bottom Градиент снизу
 miscsettings.infobar_gradient_top Градиент сверху
 miscsettings.infobar_logo_hdd_dir Каталог с пиконами
@@ -1915,20 +1932,30 @@ nvod.percentage (%d%% над)
 nvod.starting (Старт через %d минут)
 nvodselector.directormode Прямой режим
 nvodselector.head Выбор времени старта
+nvodselector.starttime Выбор времени старта
 nvodselector.subservice Выбор субканала
 opkg.button.expert_off Стандартный режим
 opkg.button.expert_on Экспертный режим
 opkg.button.info Информация о пакете
 opkg.button.install Установить пакет
 opkg.button.uninstall Удалить пакет
-opkg.failure.install Не удалось установить (%d)
-opkg.failure.update Не удалось обновить (%d)
-opkg.failure.upgrade Не удалось обновить (%d)
+opkg.enter.feed.address Задайте адрес feed-server или локальной директории!
+opkg.enter.feed.address.example Пример: http://pkg.nevis.neutrino-hd.com
+opkg.failure.install Не удалось установить
+opkg.failure.update Не удалось обновить
+opkg.failure.upgrade Не удалось обновить
+opkg.feed.addresses Feed-Адрес
+opkg.install.local.package Устанавливается  локальный пакет
 opkg.messagebox.reinstall Переустановить %s?
 opkg.messagebox.remove Удалить %s?
+opkg.messagebox.size.error Не достаточно свободной памяти для установки пакета!
+opkg.messagebox.updates.available Доступно обновление!
 opkg.success.install Установка успешна, может потребоваться перезапуск системы
 opkg.title Package Управления
+opkg.update.check Проверка на обновление...
+opkg.update.reading_lists Читается список пакетов...
 opkg.upgrade Обновление установленных пакетов
+opkg.warning_3rdparty_packages Пакеты третьей партии могут повредить вашу систему! Вы уверены что хотите установить этот пакет?
 options.default Настройки по умолчанию
 options.fb Буфер кадров
 options.hint_default Сброс настроек в значения по-умолчанию
@@ -2209,7 +2236,12 @@ scrambled_channel Кодированный канал
 screensaver.delay Задержка
 screensaver.dir Каталог
 screensaver.menu Заставка
+screensaver.mode Modus
+screensaver.mode_clock Часы
+screensaver.mode_clock_color Цветные часы
+screensaver.mode_image Изображения
 screensaver.off Заставка выкл
+screensaver.random Случайное изображение
 screensaver.timeout Тайм-аут смены картинок
 screensetup.lowerright Зелёная = Снизу/Справа
 screensetup.remove Снять маску
@@ -2420,6 +2452,10 @@ usermenu.msg_info_is_empty Вы не назначили название для 
 usermenu.msg_warning_name Вы назначили более одного пункта меню,\nно не назначили название для этого меню\nРекомендуется ввести новое название!
 usermenu.msg_warning_no_items Не назначены пункты меню!\nИмя будет сброшено!
 usermenu.name Название
+usermenu.title_blue Плагины
+usermenu.title_green Звуковая дорожка
+usermenu.title_red EPG
+usermenu.title_yellow Субканал
 video_mode_ok Вас устраивает этот режим?
 videomenu.43mode Масштаб 4:3
 videomenu.analog_auto Автоматически
