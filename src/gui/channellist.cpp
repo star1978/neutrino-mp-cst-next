@@ -2,7 +2,7 @@
 	Neutrino-GUI  -   DBoxII-Project
 
 	Copyright (C) 2001 Steffen Hehn 'McClean'
-	Copyright (C) 2007-2015 Stefan Seyfried
+	Copyright (C) 2007-2016 Stefan Seyfried
 
 	Kommentar:
 
@@ -729,33 +729,13 @@ int CChannelList::show()
 		else if (!empty && msg == (neutrino_msg_t) g_settings.key_list_end) {
 			actzap = updateSelection((*chanlist).size()-1);
 		}
-		else if (!empty && (msg == CRCInput::RC_up || (int) msg == g_settings.key_pageup))
+		else if (!empty && (msg == CRCInput::RC_up || (int)msg == g_settings.key_pageup ||
+				    msg == CRCInput::RC_down || (int)msg == g_settings.key_pagedown))
 		{
 			displayList = 1;
-			int step = ((int) msg == g_settings.key_pageup) ? listmaxshow : 1;  // browse or step 1
-			int new_selected = selected - step;
-			if (new_selected < 0) {
-				if (selected != 0 && step != 1)
-					new_selected = 0;
-				else
-					new_selected = (*chanlist).size() - 1;
-			}
-			actzap = updateSelection(new_selected);
-		}
-		else if (!empty && (msg == CRCInput::RC_down || (int) msg == g_settings.key_pagedown))
-		{
-			displayList = 1;
-			int step =  ((int) msg == g_settings.key_pagedown) ? listmaxshow : 1;  // browse or step 1
-			int new_selected = selected + step;
-			if (new_selected >= (int) (*chanlist).size()) {
-				if ((((*chanlist).size() - listmaxshow -1 < selected) && (step != 1)) || (selected != ((*chanlist).size() - 1)))
-					new_selected = (*chanlist).size() - 1;
-				else if ((((*chanlist).size() / listmaxshow) + 1) * listmaxshow == (*chanlist).size() + listmaxshow) // last page has full entries
-					new_selected = 0;
-				else
-					new_selected = ((step == (int) listmaxshow) && (new_selected < (int) ((((*chanlist).size() / listmaxshow)+1) * listmaxshow))) ? ((*chanlist).size() - 1) : 0;
-			}
-			actzap = updateSelection(new_selected);
+			int new_selected = UpDownKey((*chanlist), msg, listmaxshow, selected);
+			if (new_selected >= 0)
+				actzap = updateSelection(new_selected);
 		}
 		else if (!edit_state && (msg == (neutrino_msg_t)g_settings.key_bouquet_up ||
 					msg == (neutrino_msg_t)g_settings.key_bouquet_down)) {
@@ -1507,7 +1487,7 @@ void CChannelList::virtual_zap_mode(bool up)
 			break;
 		}
 	}
-	g_InfoViewer->clearVirtualZapMode();
+	g_InfoViewer->resetSwitchMode(); //disable virtual_zap_mode
 
 	if (doZap) {
 		if(g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] == 0)
@@ -2113,8 +2093,10 @@ void CChannelList::paint()
 
 void CChannelList::paintHead()
 {
-	if (header == NULL)
+	if (header == NULL){
 		header = new CComponentsHeader();
+		header->getTextObject()->enableTboxSaveScreen(g_settings.theme.menu_Head_gradient);//enable screen save for title text if color gradient is in use
+	}
 
 	header->setDimensionsAll(x, y, full_width, theight);
 
@@ -2151,7 +2133,7 @@ void CChannelList::paintHead()
 	else
 		logo_off = 10;
 
-	header->paint(CC_SAVE_SCREEN_NO);
+	header->paint(CC_SAVE_SCREEN_NO); //TODO: paint title only, currently paint() does paint all enabled header items at once and causes flicker effects in unchanged items (e.g. clock)
 }
 
 CComponentsHeader* CChannelList::getHeaderObject()
