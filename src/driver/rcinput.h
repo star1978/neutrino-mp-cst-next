@@ -208,16 +208,17 @@ class CRCInput
 			RC_plus		= KEY_VOLUMEUP,     /* /include/linux/input.h: #define KEY_VOLUMEUP		115   */
 			RC_standby	= KEY_POWER,	    /* /include/linux/input.h: #define KEY_POWER		116   */
 			RC_help		= KEY_HELP,	    /* /include/linux/input.h: #define KEY_HELP			138   */
-#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
-			RC_home		= KEY_HOME,     /* /include/linux/input.h: #define KEY_HOME			102   */
-#else
 			RC_home		= KEY_EXIT,	    /* /include/linux/input.h: #define KEY_HOME			102   */
-#endif
 			RC_setup	= KEY_MENU,	    /* /include/linux/input.h: #define KEY_SETUP		141   */
 			RC_topleft	= KEY_TOPLEFT,	
 			RC_topright	= KEY_TOPRIGHT,	
+#if HAVE_SPARK_HARDWARE
+			RC_page_up	= KEY_CHANNELUP,	    /* /include/linux/input.h: #define KEY_PAGEUP	0x192   */
+			RC_page_down	= KEY_CHANNELDOWN,	    /* /include/linux/input.h: #define KEY_PAGEDOWN	0x193   */
+#else
 			RC_page_up	= KEY_PAGEUP,	    /* /include/linux/input.h: #define KEY_PAGEUP		104   */
 			RC_page_down	= KEY_PAGEDOWN,	    /* /include/linux/input.h: #define KEY_PAGEDOWN		109   */
+#endif
 			RC_ok		= KEY_OK,	    /* /include/linux/input.h: #define KEY_OK			0x160 */ /* in patched input.h */
 			RC_red		= KEY_RED,	    /* /include/linux/input.h: #define KEY_RED			0x18e */ /* in patched input.h */
 			RC_green	= KEY_GREEN,	    /* /include/linux/input.h: #define KEY_GREEN		0x18f */ /* in patched input.h */
