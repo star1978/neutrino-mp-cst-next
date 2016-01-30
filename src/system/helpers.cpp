@@ -48,6 +48,7 @@
 #include "debug.h"
 #include <system/helpers.h>
 #include <gui/update_ext.h>
+#include <driver/framebuffer.h>
 using namespace std;
 
 int mySleep(int sec) {
@@ -858,6 +859,26 @@ bool split_config_string(const std::string &str, std::map<std::string,std::strin
 		start = end + 1;
 	}
 	return !smap.empty();
+}
+
+/* align for hw blit */
+uint32_t GetWidth4FB_HW_ACC(const uint32_t _x, const uint32_t _w, const bool max)
+{
+	uint32_t ret = _w;
+	static uint32_t xRes = 0;
+	if (xRes == 0)
+		xRes = CFrameBuffer::getInstance()->getScreenWidth(true);
+	if ((_x + ret) >= xRes)
+		ret = xRes-_x-1;
+	if (ret%4 == 0)
+		return ret;
+
+	int add = (max) ? 3 : 0;
+	ret = ((ret + add) / 4) * 4;
+	if ((_x + ret) >= xRes)
+		ret -= 4;
+
+	return ret;
 }
 
 std::vector<std::string> split(const std::string &s, char delim)
