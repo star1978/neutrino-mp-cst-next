@@ -6,6 +6,7 @@ install_DATA = \
 	DVB2000.theme \
 	DarkBlue.theme \
 	DarkBrown.theme \
+	GlassHD.theme \
 	Gray.theme \
 	Grey-Blue.theme \
 	MonoChrom.theme \
@@ -13,4 +14,5 @@ install_DATA = \
 	Olive.theme \
 	Olive-3.0.theme \
 	Red.theme \
+	Sportster.theme \
 	VirginMedia.theme
