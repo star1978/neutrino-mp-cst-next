@@ -225,7 +225,8 @@ const CControlAPI::TyCgiCall CControlAPI::yCgiCallList[]=
 	// settings
 	{"config",			&CControlAPI::ConfigCGI,	"text/plain"},
 	// filehandling
-	{"file",			&CControlAPI::FileCGI,	"+xml"}
+	{"file",			&CControlAPI::FileCGI,	"+xml"},
+	{"getdir",			&CControlAPI::getDirCGI, "+xml"}
 
 
 };
@@ -1430,7 +1431,7 @@ void CControlAPI::EpgSearchXMLCGI(CyhookHandler *hh)
  * @code
  * /control/epgsearch?<keywords>
  * or
- * /control/epgsearch?search=<keywords>[&epginfo=false][&format=plain|xml|json]
+ * /control/epgsearch?search=<keywords>[&epginfo=true|false|search][&format=plain|xml|json]
  * @endcode
  */
 
@@ -1448,12 +1449,13 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 		return;
 	}
 
-	std::string result;
-	std::string epgsearch = "";
+	std::string result ="";
+	std::string item = "";
 	t_channel_id channel_id;
 	CChannelEventList evtlist;
 
 	bool search_epginfo = (hh->ParamList["epginfo"] != "false");
+	bool return_epginfo = (hh->ParamList["epginfo"] == "true");
 
 	std::string search_keyword = (hh->ParamList["search"].empty()) ? hh->ParamList["1"] : hh->ParamList["search"];
 	const int search_epg_item = search_epginfo ? 5 /*SEARCH_EPG_ALL*/ : 1 /*SEARCH_EPG_TITLE*/;
@@ -1517,24 +1519,25 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 	unsigned int u_azeit = ( azeit > -1)? azeit:0;
 	for (eventIterator = evtlist.begin(); eventIterator != evtlist.end(); ++eventIterator)
 	{
+		bool got_next = (eventIterator != (evtlist.end() - 1));
 		if (CEitManager::getInstance()->getEPGidShort(eventIterator->eventID, &epg))
 		{
 			if( (eventIterator->startTime+eventIterator->duration) < u_azeit)
 				continue;
 
 			struct tm *tmStartZeit = localtime(&eventIterator->startTime);
-			result.clear();
+			item.clear();
 			if (hh->outType == json || hh->outType == xml)
 			{
-				result += hh->outPair("channelname", NeutrinoAPI->GetServiceName(eventIterator->channelID), true);
-				result += hh->outPair("epgtitle", epg.title, true);
-				if (search_epginfo) {
-					result += hh->outPair("info1", hh->outValue(epg.info1), true);
-					result += hh->outPair("info2", hh->outValue(epg.info2), true);
+				item += hh->outPair("channelname", NeutrinoAPI->GetServiceName(eventIterator->channelID), true);
+				item += hh->outPair("epgtitle", hh->outValue(epg.title), true);
+				if (return_epginfo) {
+					item += hh->outPair("info1", hh->outValue(epg.info1), true);
+					item += hh->outPair("info2", hh->outValue(epg.info2), true);
 				}
 				if (CEitManager::getInstance()->getEPGid(eventIterator->eventID, eventIterator->startTime, &longepg))
 					{
-					result += hh->outPair("fsk", string_printf("%c", longepg.fsk), true);
+					item += hh->outPair("fsk", string_printf("%u", longepg.fsk), true);
 					genre = "";
 #ifdef FULL_CONTENT_CLASSIFICATION
 					if (!longepg.contentClassification.empty())
@@ -1543,17 +1546,17 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 					if (longepg.contentClassification)
 						genre = GetGenre(longepg.contentClassification);
 #endif
-					result += hh->outPair("genre", ZapitTools::UTF8_to_UTF8XML(genre.c_str()), true);
+					item += hh->outPair("genre", ZapitTools::UTF8_to_UTF8XML(genre.c_str()), true);
 				}
 				strftime(tmpstr, sizeof(tmpstr), "%Y-%m-%d", tmStartZeit );
-				result += hh->outPair("date", tmpstr, true);
+				item += hh->outPair("date", tmpstr, true);
 				strftime(tmpstr, sizeof(tmpstr), "%H:%M", tmStartZeit );
-				result += hh->outPair("time", tmpstr, true);
-				result += hh->outPair("duration", string_printf("%d", eventIterator->duration / 60), true);
-				result += hh->outPair("channel_id", string_printf(PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS, eventIterator->channelID), true);
-				result += hh->outPair("eventid", string_printf("%ld", eventIterator->eventID), false);
+				item += hh->outPair("time", tmpstr, true);
+				item += hh->outPair("duration", string_printf("%d", eventIterator->duration / 60), true);
+				item += hh->outPair("channel_id", string_printf(PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS, eventIterator->channelID), true);
+				item += hh->outPair("eventid", string_printf("%ld", eventIterator->eventID), false);
 
-				epgsearch += hh->outCollection("epgsearch", result);
+				result += hh->outArrayItem("item", item, got_next);
 			}
 			else // outType == plain
 			{
@@ -1570,7 +1573,7 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 				hh->WriteLn(datetimer_str);
 				hh->WriteLn(NeutrinoAPI->GetServiceName(eventIterator->channelID));
 				hh->WriteLn(epg.title);
-				if (search_epginfo) {
+				if (return_epginfo) {
 					if(!epg.info1.empty())
 						hh->WriteLn(epg.info1);
 					if(!epg.info2.empty())
@@ -1596,12 +1599,12 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 			}
 		}
 	}
+	result = hh->outArray("epgsearch", result);
 	if (outType == json) {
-		hh->WriteLn(json_out_success(epgsearch));
+		hh->WriteLn(json_out_success(result));
 	}
 	else if (outType == xml) {
-		epgsearch = hh->outCollection("neutrino", epgsearch); // to stay backward compatible :/
-		hh->WriteLn(epgsearch);
+		hh->WriteLn(result);
 	}
 }
 
@@ -3178,13 +3181,14 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh) {
  *
  * @par nhttpd-usage
  * @code
- * /control/file?action=list&path={path}[&format=|xml|json]
+ * /control/file?action=list&path={path}[&format=|xml|json][&sort=false]
  * @endcode
  *
  * @par example:
  * @code
  * /control/file?action=list&path=/
  * /control/file?action=list&path=/&format=json
+ * /control/file?action=list&path=/&format=json&sort=false
  * @endcode
  *
  * @par output
@@ -3234,12 +3238,11 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
 
 		std::string path = hh->ParamList["path"];
 		if ((dirp = opendir(path.c_str()))) {
-			bool isFirstLine = true;
 			struct dirent *entry;
+			std::vector<FileCGI_List> filelist;
 			while ((entry = readdir(dirp))) {
-				std::string item = "";
-				item += hh->outPair("name",
-						hh->outValue(hh->outValue(entry->d_name)), true);
+				if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+					continue;
 				std::string ftype;
 				if (entry->d_type == DT_DIR)
 					ftype = "dir";
@@ -3247,73 +3250,71 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
 					ftype = "lnk";
 				else if (entry->d_type == 8)
 					ftype = "file";
-
-				item += hh->outPair("type_str", ftype, true);
-				item += hh->outPair("type",
-						string_printf("%d", (int) entry->d_type), true);
 				if (path[path.length() - 1] != '/')
 					path += "/";
 				std::string fullname = path + entry->d_name;
-				item += hh->outPair("fullname", hh->outValue(fullname), true);
+
+				FileCGI_List listitem;
+				listitem.name = std::string(entry->d_name);
+				listitem.type_str = ftype;
+				listitem.type = entry->d_type;
+				listitem.fullname = fullname;
+
+				filelist.push_back(listitem);
+			}
+			closedir(dirp);
+
+			if (hh->ParamList["sort"] != "false")
+				sort(filelist.begin(), filelist.end(), fsort);
+
+			for(std::vector<FileCGI_List>::iterator f = filelist.begin(); f != filelist.end(); ++f)
+			{
+				bool got_next = (f != filelist.end()-1);
+
+				std::string item = "";
+				item += hh->outPair("name",	hh->outValue(f->name.c_str()), true);
+				item += hh->outPair("type_str",	hh->outValue(f->type_str.c_str()), true);
+				item += hh->outPair("type",	string_printf("%d", (int) f->type), true);
+				item += hh->outPair("fullname",	hh->outValue(f->fullname.c_str()), true);
 
 				struct stat statbuf;
-				if (stat(fullname.c_str(), &statbuf) != -1) {
-					item
-							+= hh->outPair(
-									"mode",
-									string_printf("%xld",
-											(long) statbuf.st_mode), true);
+				if (stat(f->fullname.c_str(), &statbuf) != -1) {
+					item += hh->outPair("mode", string_printf("%xld", (long) statbuf.st_mode), true);
 
 					/* Print out type, permissions, and number of links. */
 					//TODO:	hh->printf("\t\t<permission>%10.10s</permission>\n", sperm (statbuf.st_mode));
-					item += hh->outPair("nlink",
-							string_printf("%d", statbuf.st_nlink), true);
+					item += hh->outPair("nlink", string_printf("%d", statbuf.st_nlink), true);
 
 					/* Print out owner's name if it is found using getpwuid(). */
 					struct passwd *pwd;
-					if ((pwd = getpwuid(statbuf.st_uid)) != NULL) {
+					if ((pwd = getpwuid(statbuf.st_uid)) != NULL)
 						item += hh->outPair("user", pwd->pw_name, true);
-					}
-					else {
-						item += hh->outPair("user",
-								string_printf("%d", statbuf.st_uid), true);
-					}
+					else
+						item += hh->outPair("user", string_printf("%d", statbuf.st_uid), true);
+
 					/* Print out group name if it is found using getgrgid(). */
 					struct group *grp;
 					if ((grp = getgrgid(statbuf.st_gid)) != NULL)
 						item += hh->outPair("group", grp->gr_name, true);
-					else {
-						item += hh->outPair("group",
-								string_printf("%d", statbuf.st_gid), true);
-					}
+					else
+						item += hh->outPair("group", string_printf("%d", statbuf.st_gid), true);
+
 					/* Print size of file. */
-					item += hh->outPair("size",
-							string_printf("%jd", (intmax_t) statbuf.st_size),
-							true);
+					item += hh->outPair("size", string_printf("%jd", (intmax_t) statbuf.st_size), true);
+
 					struct tm *tm = localtime(&statbuf.st_mtime);
 					char datestring[256] = {0};
 					/* Get localized date string. */
-					strftime(datestring, sizeof(datestring),
-							nl_langinfo(D_T_FMT), tm);
+					strftime(datestring, sizeof(datestring), nl_langinfo(D_T_FMT), tm);
 					item += hh->outPair("time", hh->outValue(datestring), true);
-
-					item += hh->outPair("time_t",
-							string_printf("%ld", (long) statbuf.st_mtime),
-							false);
+					item += hh->outPair("time_t", string_printf("%ld", (long) statbuf.st_mtime), false);
 				}
-				if(isFirstLine)
-					isFirstLine = false;
-				else
-					result += hh->outNext();
-				result += hh->outArrayItem("item", item, false);
+				result += hh->outArrayItem("item", item, got_next);
 			}
-			closedir(dirp);
 		}
 		result = hh->outArray("filelist", result);
-		// write footer
-		if (outType == json) {
+		if (outType == json)
 			hh->WriteLn(json_out_success(result));
-		}
 		else
 			hh->WriteLn(result);
 	}
@@ -3326,4 +3327,120 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
 		hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8");
 		//TODO
 	}
+}
+
+//-----------------------------------------------------------------------------
+/** Get neutrino directories
+ *
+ * @param hh CyhookHandler
+ *
+ * @par nhttpd-usage
+ * @code
+ * /control/getdir?dir=allmoviedirs&[&subdirs=true][&format=|xml|json]
+ * @endcode
+ *
+{"success": "true", "data":{"dirs": [{"dir": "/mnt/series/",
+"used": "1"
+}
+,{"dir": "/mnt/movies/",
+"used": "1"
+}
+,{"dir": "/mnt/movies/subdir"
+}
+{"dir": "/media/sda1/movie"
+}
+,]
+}}
+ * @endcode
+ *
+ */
+//-----------------------------------------------------------------------------
+void CControlAPI::getDirCGI(CyhookHandler *hh) {
+	std::string result = "";
+	std::string item = "";
+	bool isFirstLine = true;
+
+	TOutType outType = hh->outStart();
+
+	//Shows all 7 directories stored in the moviebrowser.conf
+	if (hh->ParamList["dir"] == "moviedir" || hh->ParamList["dir"] == "allmoviedirs" ) {
+		CConfigFile *Config = new CConfigFile(',');
+		Config->loadConfig(MOVIEBROWSER_CONFIGFILE);
+		char index[21];
+		std::string mb_dir_used;
+		std::string mb_dir;
+
+		for(int i=0;i<8;i++) {
+			snprintf(index, sizeof(index), "%d", i);
+			mb_dir = "mb_dir_";
+			mb_dir = mb_dir + index;
+			mb_dir = Config->getString(mb_dir, "");
+
+			if(!mb_dir.empty()) {
+				item += hh->outPair("dir", hh->outValue(mb_dir), false);
+				if(isFirstLine) {
+					isFirstLine = false;
+				}
+				else {
+					result += hh->outNext();
+				}
+				result += hh->outArrayItem("item", item, false);
+				item = "";
+				if (hh->ParamList["subdirs"] == "true") {
+					result = getSubdirectories(hh, mb_dir, result);
+				}
+			}
+		}
+	}
+
+	//Shows the neutrino recording dir
+	if (hh->ParamList["dir"] == "recordingdir" || hh->ParamList["dir"] == "allmoviedirs" ) {
+		item += hh->outPair("dir", hh->outValue(g_settings.network_nfs_recordingdir), false);
+		if(isFirstLine) {
+			isFirstLine = false;
+		}
+		else {
+			result += hh->outNext();
+		}
+		result += hh->outArrayItem("item", item, false);
+		if (hh->ParamList["subdirs"] == "true") {
+			result = getSubdirectories(hh, g_settings.network_nfs_recordingdir, result);
+		}
+	}
+
+
+	result = hh->outArray("dirs", result);
+	// write footer
+	if (outType == json) {
+		hh->WriteLn(json_out_success(result));
+	}
+	else {
+		hh->WriteLn(result);
+	}
+}
+
+//Helpfunction to get subdirs of a dir
+std::string CControlAPI::getSubdirectories(CyhookHandler *hh, std::string path, std::string result) {
+	std::string item = "";
+	std::string dirname;
+	DIR *dirp;
+	struct dirent *entry;
+
+	if ((dirp = opendir(path.c_str()))) {
+		while ((entry = readdir(dirp))) {
+			if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
+				if (path[path.length() - 1] != '/') {
+					path += "/";
+				}
+				std::string fullname = path + entry->d_name;
+				item += hh->outPair("dir", hh->outValue(fullname), false);
+				result += hh->outNext();
+				result += hh->outArrayItem("item", item, false);
+				item = "";
+				result = getSubdirectories(hh, fullname, result);
+			}
+		}
+		closedir(dirp);
+	}
+	return result;
 }
