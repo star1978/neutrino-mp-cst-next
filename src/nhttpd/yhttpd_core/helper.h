@@ -13,6 +13,10 @@
 #include <vector>
 #include "ytypes_globals.h"
 
+#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
+#include <driver/framebuffer.h>
+#endif
+
 //-----------------------------------------------------------------------------
 int minmax(int value,int min, int max);
 void correctTime(struct tm *zt);
@@ -48,5 +52,10 @@ std::string json_out_pair(std::string _key, std::string _value);
 std::string json_out_success(std::string _result);
 std::string json_out_error(std::string _error);
 std::string json_convert_string(std::string s);
+
+//-----------------------------------------------------------------------------
+// Script Helpers
+//-----------------------------------------------------------------------------
+std::string yExecuteScript(std::string cmd);
 
 #endif /* __yhttpd_helper_h__ */

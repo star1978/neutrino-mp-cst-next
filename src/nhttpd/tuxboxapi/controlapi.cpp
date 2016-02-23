@@ -161,76 +161,74 @@ void CControlAPI::compatibility_Timer(CyhookHandler *hh)
 const CControlAPI::TyCgiCall CControlAPI::yCgiCallList[]=
 {
 	// channel & bouquet & epg & zapping handling
-	{"getservicesxml", 	&CControlAPI::GetServicesxmlCGI,""},
-	{"getbouquetsxml", 	&CControlAPI::GetBouquetsxmlCGI,""},
-	{"getubouquetsxml", 	&CControlAPI::GetUBouquetsxmlCGI,""},
-	{"channellist", 	&CControlAPI::ChannellistCGI,	"text/plain"},
-	{"logolist",	 	&CControlAPI::LogolistCGI,	"text/plain"},
-	{"getbouquet", 		&CControlAPI::GetBouquetCGI,	"+xml"},
-	{"getbouquets", 	&CControlAPI::GetBouquetsCGI,	"+xml"},
-	{"getmode", 		&CControlAPI::GetModeCGI,		"text/plain"},
-	{"setmode", 		&CControlAPI::SetModeCGI,		"text/plain"},
-	{"epgsearchxml", 	&CControlAPI::EpgSearchXMLCGI,			""},
-	{"epgsearch", 		&CControlAPI::EpgSearchTXTCGI,			""},
-	{"epg", 		&CControlAPI::EpgCGI,			""},
-	{"zapto", 		&CControlAPI::ZaptoCGI,			"text/plain"},
-	{"signal", 		&CControlAPI::SignalInfoCGI,			"text/plain"},
-	{"getonidsid", 		&CControlAPI::GetChannel_IDCGI,	"text/plain"},
-	{"currenttpchannels", 	&CControlAPI::GetTPChannel_IDCGI,	"text/plain"},
+	{"getservicesxml",	&CControlAPI::GetServicesxmlCGI,	""},
+	{"getbouquetsxml",	&CControlAPI::GetBouquetsxmlCGI,	""},
+	{"getubouquetsxml",	&CControlAPI::GetUBouquetsxmlCGI,	""},
+	{"channellist",		&CControlAPI::ChannellistCGI,		"text/plain"},
+	{"logolist",		&CControlAPI::LogolistCGI,		"text/plain"},
+	{"getbouquet",		&CControlAPI::GetBouquetCGI,		"+xml"},
+	{"getbouquets",		&CControlAPI::GetBouquetsCGI,		"+xml"},
+	{"getmode",		&CControlAPI::GetModeCGI,		"text/plain"},
+	{"setmode",		&CControlAPI::SetModeCGI,		"text/plain"},
+	{"epgsearchxml",	&CControlAPI::EpgSearchXMLCGI,		""},
+	{"epgsearch",		&CControlAPI::EpgSearchCGI,		""},
+	{"epg",			&CControlAPI::EpgCGI,			""},
+	{"zapto",		&CControlAPI::ZaptoCGI,			"text/plain"},
+	{"signal",		&CControlAPI::SignalInfoCGI,		"text/plain"},
+	{"getonidsid",		&CControlAPI::GetChannel_IDCGI,		"text/plain"},
+	{"currenttpchannels",	&CControlAPI::GetTPChannel_IDCGI,	"text/plain"},
 	// boxcontrol - system
-	{"standby", 		&CControlAPI::StandbyCGI,		"text/plain"},
-	{"shutdown", 		&CControlAPI::ShutdownCGI,		"text/plain"},
-	{"reboot", 			&CControlAPI::RebootCGI,		"text/plain"},
-	{"getdate", 		&CControlAPI::GetDateCGI,		"text/plain"},
-	{"gettime", 		&CControlAPI::GetTimeCGI,		"text/plain"},
-	{"info", 			&CControlAPI::InfoCGI,			"text/plain"},
-	{"version", 		&CControlAPI::VersionCGI,		""},
-	{"reloadsetup", 	&CControlAPI::ReloadNeutrinoSetupCGI,		""},
-	{"reloadplugins", 	&CControlAPI::ReloadPluginsCGI,		""},
-	{"reloadchannels", 	&CControlAPI::ReloadChannelsCGI,	""},
-	{"screenshot", 		&CControlAPI::ScreenshotCGI,		""},
+	{"standby",		&CControlAPI::StandbyCGI,		"text/plain"},
+	{"shutdown",		&CControlAPI::ShutdownCGI,		"text/plain"},
+	{"reboot",		&CControlAPI::RebootCGI,		"text/plain"},
+	{"getdate",		&CControlAPI::GetDateCGI,		"text/plain"},
+	{"gettime",		&CControlAPI::GetTimeCGI,		"text/plain"},
+	{"info",		&CControlAPI::InfoCGI,			"text/plain"},
+	{"version",		&CControlAPI::VersionCGI,		""},
+	{"reloadsetup",		&CControlAPI::ReloadNeutrinoSetupCGI,	""},
+	{"reloadplugins",	&CControlAPI::ReloadPluginsCGI,		""},
+	{"reloadchannels",	&CControlAPI::ReloadChannelsCGI,	""},
+	{"screenshot",		&CControlAPI::ScreenshotCGI,		""},
 	// boxcontrol - devices
-	{"volume", 			&CControlAPI::VolumeCGI,		"text/plain"},
-	{"lcd", 			&CControlAPI::LCDAction,		"text/plain"},
-	{"system", 			&CControlAPI::SystemCGI,		"text/plain"},
-	{"message", 		&CControlAPI::MessageCGI,		"text/plain"},
-	{"rc", 				&CControlAPI::RCCGI,			"text/plain"},
-	{"rcem", 			&CControlAPI::RCEmCGI,			"text/plain"},
+	{"volume",		&CControlAPI::VolumeCGI,		"text/plain"},
+	{"lcd",			&CControlAPI::LCDAction,		"text/plain"},
+	{"system",		&CControlAPI::SystemCGI,		"text/plain"},
+	{"message",		&CControlAPI::MessageCGI,		"text/plain"},
+	{"rc",			&CControlAPI::RCCGI,			"text/plain"},
+	{"rcem",		&CControlAPI::RCEmCGI,			"text/plain"},
 	// Start skripts, plugins
-	{"startplugin", 	&CControlAPI::StartPluginCGI,	"text/plain"},
-	{"exec", 			&CControlAPI::ExecCGI,			"+xml"},
-	{"yweb", 			&CControlAPI::YWebCGI,			"text/plain"},
+	{"startplugin",		&CControlAPI::StartPluginCGI,		"text/plain"},
+	{"exec",		&CControlAPI::ExecCGI,			"text/plain"},
+	{"yweb",		&CControlAPI::YWebCGI,			"text/plain"},
 	// video & Audio handling
-	{"aspectratio", 	&CControlAPI::AspectRatioCGI,	"text/plain"},
-	{"videoformat", 	&CControlAPI::VideoFormatCGI,	"text/plain"},
-	{"videooutput", 	&CControlAPI::VideoOutputCGI,	"text/plain"},
-	{"vcroutput", 		&CControlAPI::VCROutputCGI,		"text/plain"},
-	{"scartmode", 		&CControlAPI::ScartModeCGI,		"text/plain"},
-	{"audio", 			&CControlAPI::AudioCGI,			"text/plain"},
-	{"crypt", 			&CControlAPI::CryptCGI,			"text/plain"},
+	{"aspectratio",		&CControlAPI::AspectRatioCGI,		"text/plain"},
+	{"videoformat",		&CControlAPI::VideoFormatCGI,		"text/plain"},
+	{"videooutput",		&CControlAPI::VideoOutputCGI,		"text/plain"},
+	{"vcroutput",		&CControlAPI::VCROutputCGI,		"text/plain"},
+	{"scartmode",		&CControlAPI::ScartModeCGI,		"text/plain"},
+	{"audio",		&CControlAPI::AudioCGI,			"text/plain"},
+	{"crypt",		&CControlAPI::CryptCGI,			"text/plain"},
 	// timer
-	{"timer", 			&CControlAPI::TimerCGI,			"text/plain"},
+	{"timer",		&CControlAPI::TimerCGI,			"text/plain"},
 	// bouquet editing
-	{"setbouquet", 		&CControlAPI::setBouquetCGI,	"text/plain"},
-	{"savebouquet",		&CControlAPI::saveBouquetCGI,	"text/plain"},
-	{"movebouquet",		&CControlAPI::moveBouquetCGI,	"text/plain"},
-	{"deletebouquet",	&CControlAPI::deleteBouquetCGI,	"text/plain"},
-	{"addbouquet",		&CControlAPI::addBouquetCGI,	"text/plain"},
-	{"renamebouquet",	&CControlAPI::renameBouquetCGI,	"text/plain"},
-	{"changebouquet",	&CControlAPI::changeBouquetCGI,	"text/plain"},
-	{"updatebouquet",	&CControlAPI::updateBouquetCGI,	"text/plain"},
+	{"setbouquet",		&CControlAPI::setBouquetCGI,		"text/plain"},
+	{"savebouquet",		&CControlAPI::saveBouquetCGI,		"text/plain"},
+	{"movebouquet",		&CControlAPI::moveBouquetCGI,		"text/plain"},
+	{"deletebouquet",	&CControlAPI::deleteBouquetCGI,		"text/plain"},
+	{"addbouquet",		&CControlAPI::addBouquetCGI,		"text/plain"},
+	{"renamebouquet",	&CControlAPI::renameBouquetCGI,		"text/plain"},
+	{"changebouquet",	&CControlAPI::changeBouquetCGI,		"text/plain"},
+	{"updatebouquet",	&CControlAPI::updateBouquetCGI,		"text/plain"},
 	// utils
-	{"build_live_url",	&CControlAPI::build_live_url,	""},
-	{"build_playlist",	&CControlAPI::build_playlist,	""},
-	{"get_logo",		&CControlAPI::logoCGI,	"text/plain"},
+	{"build_live_url",	&CControlAPI::build_live_url,		""},
+	{"build_playlist",	&CControlAPI::build_playlist,		""},
+	{"get_logo",		&CControlAPI::logoCGI,			"text/plain"},
 	// settings
-	{"config",			&CControlAPI::ConfigCGI,	"text/plain"},
+	{"config",		&CControlAPI::ConfigCGI,		"text/plain"},
 	// filehandling
-	{"file",			&CControlAPI::FileCGI,	"+xml"},
-	{"statfs",			&CControlAPI::StatfsCGI,	"+xml"},
-	{"getdir",			&CControlAPI::getDirCGI, "+xml"}
-
-
+	{"file",		&CControlAPI::FileCGI,			"+xml"},
+	{"statfs",		&CControlAPI::StatfsCGI,		"+xml"},
+	{"getdir",		&CControlAPI::getDirCGI,		"+xml"}
 };
 //-----------------------------------------------------------------------------
 // Main Dispatcher
@@ -271,7 +269,7 @@ void CControlAPI::Execute(CyhookHandler *hh)
 	else if(std::string(yCgiCallList[index].mime_type).empty())	// decide in function
 		;
 	else if(std::string(yCgiCallList[index].mime_type) == "+xml")		// Parameter xml?
-		if ((!hh->ParamList["xml"].empty()) ||(hh->ParamList["format"] == "xml"))
+		if (hh->getOutType() == xml)
 			hh->SetHeader(HTTP_OK, "text/xml; charset=UTF-8");
 		else
 			hh->SetHeader(HTTP_OK, "text/html; charset=UTF-8");
@@ -321,7 +319,7 @@ void CControlAPI::TimerCGI(CyhookHandler *hh)
 			}
 		}
 		else {
-			if (hh->ParamList["format"] == "xml")
+			if (hh->getOutType() == xml)
 				SendTimersXML(hh);
 			else
 				SendTimers(hh);
@@ -392,28 +390,44 @@ void CControlAPI::SetModeCGI(CyhookHandler *hh)
 //-----------------------------------------------------------------------------
 void CControlAPI::GetModeCGI(CyhookHandler *hh)
 {
-	int mode = NeutrinoAPI->Zapit->getMode();
-	if ( mode == CZapitClient::MODE_TV)
-		hh->WriteLn("tv");
-	else if ( mode == CZapitClient::MODE_RADIO)
-		return hh->WriteLn("radio");
+	hh->outStart();
+
+	std::string result = "";
+	int mode = CNeutrinoApp::getInstance()->getMode();
+	if (mode == NeutrinoMessages::mode_tv)
+		result = "tv";
+	else if (mode == NeutrinoMessages::mode_radio)
+		result = "radio";
+	else if (mode == NeutrinoMessages::mode_scart)
+		result = "scart";
+	else if (mode == NeutrinoMessages::mode_standby)
+		result = "standby";
+	else if (mode == NeutrinoMessages::mode_audio)
+		result = "audio";
+	else if (mode == NeutrinoMessages::mode_pic)
+		result = "pic";
+	else if (mode == NeutrinoMessages::mode_ts)
+		result = "ts";
+	else if (mode == NeutrinoMessages::mode_webtv)
+		result = "webtv";
+	else if (mode == NeutrinoMessages::mode_upnp)
+		result = "upnp";
 	else
-		return hh->WriteLn("unknown");
+		result = "unknown";
+
+	if (hh->getOutType() != plain)
+	{
+		result = hh->outPair("mode", result, false);
+		result = hh->outCollection("getmode", result);
+	}
+	hh->SendResult(result);
 }
 
 //-----------------------------------------------------------------------------
 void CControlAPI::ExecCGI(CyhookHandler *hh)
 {
-	bool res = false;
 	std::string script, result;
-	// override standard header
-	if (hh->ParamList.size() > 1 && hh->ParamList["xml"].empty())
-		hh->SetHeader(HTTP_OK, "text/html; charset=UTF-8");
-	else if (hh->ParamList.size() > 1 && !hh->ParamList["xml"].empty())
-		hh->SetHeader(HTTP_OK, "text/xml; charset=UTF-8");
-	else
-		hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8");
-	if ( !hh->ParamList.empty() )
+	if (!hh->ParamList.empty() )
 	{
 		script = hh->ParamList["1"];
 		unsigned int len = hh->ParamList.size();
@@ -423,16 +437,18 @@ void CControlAPI::ExecCGI(CyhookHandler *hh)
 				script += " ";
 				script += hh->ParamList[itoa(y)];
 			}
-		result = YexecuteScript(hh, script);
+		result = yExecuteScript(script);
 	}
 	else
-		printf("[CControlAPI] no script given\n");
+	{
+		log_level_printf(0, "[%s] no script given\n", __func__);
+		result = "error";
+	}
 
-	res = (result != "error");
-	if (res)
-		hh->Write(result);
-	else
+	if (result == "error")
 		hh->SetError(HTTP_NOT_FOUND);
+	else
+		hh->WriteLn(result);
 }
 
 //-----------------------------------------------------------------------------
@@ -1132,22 +1148,12 @@ void CControlAPI::GetBouquetCGI(CyhookHandler *hh) {
 					}
 				}
 			result = hh->outArray("channels", result);
-			// write footer
-			if (outType == json) {
-				hh->WriteLn(json_out_success(result));
-			}
-			else {
-				hh->WriteLn(result);
-			}
+
+			hh->SendResult(result);
 		}
 	}
-	else {
-		if (hh->ParamList["format"] == "json") {
-			hh->WriteLn(json_out_error("no parameter"));
-		}
-		else
-			hh->WriteLn("error");
-	}
+	else
+		hh->SendError("no parameter");
 }
 
 //-------------------------------------------------------------------------
@@ -1218,7 +1224,7 @@ void CControlAPI::GetBouquetsCGI(CyhookHandler *hh) {
 	bool encode = false;
 	std::string result = "";
 
-	TOutType outType = hh->outStart(true /*old mode*/);
+	TOutType outType = hh->outStart();
 
 	if (hh->ParamList["showhidden"] == "false")
 		show_hidden = false;
@@ -1256,20 +1262,19 @@ void CControlAPI::GetBouquetsCGI(CyhookHandler *hh) {
 			bouquet = std::string(g_bouquetManager->Bouquets[i]->bFav ? g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME) : g_bouquetManager->Bouquets[i]->Name.c_str());
 			if (encode)
 				bouquet = encodeString(bouquet); // encode (URLencode) the bouquetname
-			item = hh->outPair("number", string_printf("%u", i + 1), true);
-			if(outType == plain) item+= " ";
-			item += hh->outPair("name", bouquet, false);
+			if (outType == plain)
+				item = string_printf("%u", i + 1) + " " + bouquet + "\n";
+			else
+			{
+				item = hh->outPair("number", string_printf("%u", i + 1), true);
+				item += hh->outPair("name", bouquet, false);
+			}
 			result += hh->outArrayItem("bouquet", item, (i < size-1));
 		}
 	}
 	result = hh->outArray("bouquets", result);
-	// write footer
-	if (outType == json) {
-		hh->WriteLn(json_out_success(result));
-	}
-	else {
-		hh->WriteLn(result);
-	}
+
+	hh->SendResult(result);
 }
 //-----------------------------------------------------------------------------
 //	details EPG Information for channelid
@@ -1364,7 +1369,7 @@ void CControlAPI::epgDetailList(CyhookHandler *hh) {
 	}
 
 	// ------ generate output ------
-	TOutType outType = hh->outStart(true /*old mode*/);
+	hh->outStart(true /*old mode*/);
 	std::string result = "";
 
 	NeutrinoAPI->eList.clear();
@@ -1405,13 +1410,8 @@ void CControlAPI::epgDetailList(CyhookHandler *hh) {
 		result = channelEPGformated(hh, 0, channel_id, max, stoptime);
 
 	result = hh->outCollection("epglist", result);
-	// write footer
-	if (outType == json) {
-		hh->WriteLn(json_out_success(result));
-	}
-	else {
-		hh->WriteLn(result);
-	}
+
+	hh->SendResult(result);
 }
 //-------------------------------------------------------------------------------------------------
 inline static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
@@ -1438,7 +1438,7 @@ void CControlAPI::EpgSearchXMLCGI(CyhookHandler *hh)
  */
 
 //-------------------------------------------------------------------------
-void CControlAPI::EpgSearchTXTCGI(CyhookHandler *hh) 
+void CControlAPI::EpgSearchCGI(CyhookHandler *hh)
 {
 	SendFoundEvents(hh);
 }
@@ -1464,7 +1464,7 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 
 	if (xml_format) // to stay backward compatible :/
 		hh->ParamList["format"] = "xml";
-	TOutType outType = hh->outStart(true /*old mode*/);
+	hh->outStart(true /*old mode*/);
 
 	/* TODO: maybe add following options as in tuxbox neutrino
 		hh->ParamList["epgitem"]
@@ -1598,16 +1598,13 @@ void CControlAPI::SendFoundEvents(CyhookHandler *hh, bool xml_format)
 #endif
 				}
 				hh->WriteLn("----------------------------------------------------------");
+				return;
 			}
 		}
 	}
 	result = hh->outArray("epgsearch", result);
-	if (outType == json) {
-		hh->WriteLn(json_out_success(result));
-	}
-	else if (outType == xml) {
-		hh->WriteLn(result);
-	}
+
+	hh->SendResult(result);
 }
 
 //-------------------------------------------------------------------------
@@ -1634,7 +1631,7 @@ void CControlAPI::EpgCGI(CyhookHandler *hh) {
 	bool param_empty = hh->ParamList.empty();
 	hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8"); // default
 	// Detailed EPG list in XML or JSON
-	if (!hh->ParamList["xml"].empty() || !hh->ParamList["json"].empty() || !hh->ParamList["detaillist"].empty()) {
+	if (hh->getOutType() == xml || hh->getOutType() == json || !hh->ParamList["detaillist"].empty()) {
 		epgDetailList(hh);
 	}
 	// Standard list normal or extended
@@ -1665,7 +1662,7 @@ void CControlAPI::EpgCGI(CyhookHandler *hh) {
 	}
 	else if (!hh->ParamList["search"].empty())
 	{
-		SendFoundEvents(hh, (!hh->ParamList["xml"].empty() || hh->ParamList["format"] == "xml"));
+		SendFoundEvents(hh, (hh->getOutType() == xml));
 	}
 	// query details for given eventid
 	else if (!hh->ParamList["eventid"].empty()) {
@@ -2447,65 +2444,6 @@ void CControlAPI::YWeb_SendRadioStreamingPid(CyhookHandler *hh)
 	hh->printf("0x%04x",apid);
 }
 
-//-----------------------------------------------------------------------------
-std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
-{
-#if HAVE_SPARK_HARDWARE || HAVE_DUCKBOX_HARDWARE
-	const char *fbshot = "Y_Tools fbshot fb /";
-	int len = strlen(fbshot);
-	if (!strncmp(cmd.c_str(), fbshot, len))
-		return CFrameBuffer::getInstance()->OSDShot(cmd.substr(len - 1)) ? "" : "error";
-#endif
-	std::string script, para, result;
-	bool found = false;
-
-	// split script and parameters
-	int pos;
-	if ((pos = cmd.find_first_of(" ")) > 0)
-	{
-		script = cmd.substr(0, pos);
-		para = cmd.substr(pos+1,cmd.length() - (pos+1)); // snip
-	}
-	else
-		script=cmd;
-	// get file
-	std::string fullfilename;
-	script += ".sh"; //add script extention
-	char cwd[255]={0};
-	getcwd(cwd, 254);
-
-	for (unsigned int i=0; i<PLUGIN_DIR_COUNT && !found; i++)
-	{
-		fullfilename = PLUGIN_DIRS[i]+"/"+script;
-		FILE *test =fopen(fullfilename.c_str(),"r"); // use fopen: popen does not work
-		if( test != NULL )
-		{
-			fclose(test);
-			chdir(PLUGIN_DIRS[i].c_str());
-			FILE *f = popen( (fullfilename+" "+para).c_str(),"r"); //execute
-			if (f != NULL)
-			{
-				found = true;
-
-				char output[1024];
-				while (fgets(output,1024,f)) // get script output
-					result += output;
-				pclose(f);
-			}
-		}
-	}
-	chdir(cwd);
-
-	if (!found)
-	{
-		printf("[CControlAPI] script %s not found in\n",script.c_str());
-		for (unsigned int i=0; i<PLUGIN_DIR_COUNT; i++) {
-			printf("%s\n",PLUGIN_DIRS[i].c_str());
-		}
-		result="error";
-	}
-	return result;
-}
 //-------------------------------------------------------------------------
 void CControlAPI::doModifyTimer(CyhookHandler *hh)
 {
@@ -3099,7 +3037,7 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh) {
 	std::string result = "";
 	std::string configFileName = hh->ParamList["config"];
 
-	TOutType outType = hh->outStart();
+	hh->outStart();
 
 	if (hh->ParamList["action"] == "submit")
 		load = false;
@@ -3146,28 +3084,15 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh) {
 	}
 	else {
 		if(!configFileName.empty())
-			error = string_printf("no config defined for: %s", (hh->ParamList["config"]).c_str());
-		else
-			error = "no config given";
+			error = string_printf("no config defined for %s", (hh->ParamList["config"]).c_str());
 	}
 
-	// write footer
-	if (error.empty()) {
-		if (outType == json) {
-			hh->WriteLn(json_out_success(result));
-		}
-		else {
-			hh->WriteLn(hh->outCollection("config", result));
-		}
-	}
-	else {
-		if (outType == json) {
-			hh->WriteLn(json_out_error(error));
-		}
-		else {
-			hh->SendError();
-		}
-	}
+	hh->WriteLn(hh->outCollection("config", result));
+
+	if (error.empty())
+		hh->SendResult(result);
+	else
+		hh->SendError(error);
 
 	delete Config;
 }
@@ -3232,7 +3157,7 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
 	if (hh->ParamList["action"] == "list") { // directory list: action=list&path=<path>
 		DIR *dirp;
 
-		TOutType outType = hh->outStart();
+		hh->outStart();
 
 		std::string path = hh->ParamList["path"];
 		if ((dirp = opendir(path.c_str()))) {
@@ -3311,10 +3236,8 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
 			}
 		}
 		result = hh->outArray("filelist", result);
-		if (outType == json)
-			hh->WriteLn(json_out_success(result));
-		else
-			hh->WriteLn(result);
+
+		hh->SendResult(result);
 	}
 	// create new folder
 	else if (hh->ParamList["action"] == "new_folder") {
@@ -3347,7 +3270,7 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
  * @code
  * {"success": "true", "data":
  * {
- * 	"statfs": [{
+ * 	"statfs": {
  * 		"path": "/media/sda1/movies",
  * 		"f_type": "0x4d44",
  * 		"f_bsize": "4096",
@@ -3359,7 +3282,7 @@ void CControlAPI::FileCGI(CyhookHandler *hh) {
  * 		"f_fsid": "0x801, 0",
  * 		"f_namelen": "1530",
  * 		"f_frsize": "24"
- * 	}]
+ * 	}
  * }}
  * @endcode
  */
@@ -3370,7 +3293,7 @@ void CControlAPI::StatfsCGI(CyhookHandler *hh) {
 	if (hh->ParamList["path"].empty())
 		hh->ParamList["path"] = "/";
 
-	TOutType outType = hh->outStart();
+	hh->outStart();
 
 	std::string path = hh->ParamList["path"];
 	struct statfs s;
@@ -3389,22 +3312,12 @@ void CControlAPI::StatfsCGI(CyhookHandler *hh) {
 		item += hh->outPair("f_namelen", string_printf("%lu", (unsigned long) s.f_namelen), true);
 		item += hh->outPair("f_frsize", string_printf("%lu", (unsigned long) s.f_frsize), false);
 
-		result = hh->outArrayItem("path", item, false);
-		result = hh->outArray("statfs", result);
+		result = hh->outCollection("statfs", item);
 
-		if (outType == json)
-			hh->WriteLn(json_out_success(result));
-		else
-			hh->WriteLn(result);
+		hh->SendResult(result);
 	}
 	else
-	{
-		if (outType == json)
-			hh->WriteLn(json_out_error("statfs failed"));
-		else
-			hh->SendError();
-	}
-
+		hh->SendError("statfs failed");
 }
 
 //-----------------------------------------------------------------------------
@@ -3438,7 +3351,7 @@ void CControlAPI::getDirCGI(CyhookHandler *hh) {
 	std::string item = "";
 	bool isFirstLine = true;
 
-	TOutType outType = hh->outStart(true /*old mode*/);
+	hh->outStart(true /*old mode*/);
 
 	//Shows all 7 directories stored in the moviebrowser.conf
 	if (hh->ParamList["dir"] == "moviedir" || hh->ParamList["dir"] == "allmoviedirs" ) {
@@ -3488,13 +3401,8 @@ void CControlAPI::getDirCGI(CyhookHandler *hh) {
 
 
 	result = hh->outArray("dirs", result);
-	// write footer
-	if (outType == json) {
-		hh->WriteLn(json_out_success(result));
-	}
-	else {
-		hh->WriteLn(result);
-	}
+
+	hh->SendResult(result);
 }
 
 //Helpfunction to get subdirs of a dir
