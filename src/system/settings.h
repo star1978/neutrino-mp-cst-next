@@ -873,8 +873,8 @@ struct SNeutrinoSettings
 		ITEM_THREE_D_MODE = 32,
 		ITEM_RASS = 33,
 
-		ITEM_LIVESTREAM_RESOLUTION = 31,
-		ITEM_ADZAP = 32,
+		ITEM_LIVESTREAM_RESOLUTION = 34,
+		ITEM_ADZAP = 35,
 
 		ITEM_MAX   // MUST be always the last in the list
 	} USER_ITEM;
