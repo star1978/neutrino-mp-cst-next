@@ -109,6 +109,15 @@ GENRE.TRAVEL_HOBBIES.6 Реклама/Шоппинг
 GENRE.TRAVEL_HOBBIES.7 Садоводство
 GENRE.UNKNOWN Неизвестно
 adzap Рекламный переключатель
+adzap.announce Через %d Секунд будет переключено на \n%s
+adzap.cancel Неактивно
+adzap.disable Выкл
+adzap.enable Вкл (одноразово)
+adzap.minute Минут
+adzap.minutes Минут
+adzap.monitor Вкл (запомнить)
+adzap.switchback Вернутся к
+adzap.writedata Сохраняются даты статуса
 apidselector.head Выбор языка
 audio.srs_algo Тип
 audio.srs_algo_heavy Тяжёлый
@@ -931,6 +940,10 @@ ledcontroler.off Led1 и Led2 выкл
 ledcontroler.on.all Led1 и Led2 вкл
 ledcontroler.on.led1 Led1 вкл
 ledcontroler.on.led2 Led2 вкл
+livestream.head Livestreams
+livestream.read_data Читается поток...
+livestream.resolution Разрешение
+livestream.scriptpath Путь к скриптам
 lua.boolparam_deprecated1 Внимание!
 lua.boolparam_deprecated2 Использование цифр или строк
 lua.boolparam_deprecated3 для Boolean параметр устарел.\n Пожалуйста, используйте Bool значения прим.:
@@ -989,6 +1002,10 @@ menu.back Назад
 menu.cancel Отмена
 menu.hint_a_pic Настройки аудио-плеера, просмотрщика картинок, веб-ТВ
 menu.hint_accept_other_remotes Отключите, чтобы проигнорировать управление
+menu.hint_adzap Рекламный переключатель позволяет вернуться на текущий канал по истечению заданного времени
+menu.hint_adzap_active Рекламный переключатель активирован. С последующим вызовом будет выключен.
+menu.hint_adzap_setup Настройки рекламного переключателя
+menu.hint_adzap_writedata Сохраняются статус данные рекламного переключателя в /tmp/adzap.data
 menu.hint_aplay Аудио плеер
 menu.hint_aplay_setup Изменение названий меню, директории, скринсейвер и прочее
 menu.hint_audio Настройки аудио выхода
@@ -1847,9 +1864,9 @@ movieplayer.bookmarkname Название закладки
 movieplayer.bookmarkname_hint1 Введите название
 movieplayer.bookmarkname_hint2 для новой закладки
 movieplayer.chapters Раздел
-movieplayer.defplugin Старт плагина
 movieplayer.fileplayback Просмотр медиа-файлов
 movieplayer.head Видеоплеер
+movieplayer.plugin Видеоплеер-плагин
 movieplayer.starting Включить воспроизведение ...
 movieplayer.titles Название
 movieplayer.toomanybookmarks Слишком много закладок\nУдалите одну из уже существующих
@@ -2072,6 +2089,7 @@ ping.unreachable Недоступен
 pinprotection.head Введите PIN-код
 pinprotection.wrongcode Неверный PIN-код! Повторите ввод
 plugins.hdd_dir Каталог плагинов на HDD
+plugins.no_plugin Плагинов нету
 plugins.result Вывод плагина
 plugintype.disabled Отключено
 plugintype.game Игра
@@ -2433,6 +2451,7 @@ timing.infobar_radio Инфопанель (Радио режим)
 timing.menu Меню
 timing.numericzap Набор цифр с пульта
 timing.volumebar Звуковая панель
+tmdb.read_data Поиск TMDB данных...
 unicable.lnb Вход кабеля
 unicable.qrg Частота кабеля
 unicable.scr SCR кабеля
@@ -2451,6 +2470,7 @@ usermenu.button_green Меню пользователя: Зелёная
 usermenu.button_red Меню пользователя: Красная
 usermenu.button_yellow Меню пользователя: Жёлтая
 usermenu.head Меню пользователя
+usermenu.item_adzap Рекламный переключатель
 usermenu.item_bar ---- Полоса ----
 usermenu.item_epg_misc Функции телегида
 usermenu.item_none (Ничего нет)
