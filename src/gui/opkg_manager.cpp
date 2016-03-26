@@ -609,7 +609,7 @@ int COPKGManager::showMenu()
 
 bool COPKGManager::hasOpkgSupport()
 {
-	string deps[] = {"/var/lib/opkg", /*"/bin/opkg-check-config", "/bin/update-alternatives", "/share/opkg/intercept"*/};
+	string deps[] = {"/usr/lib/opkg", /*"/bin/opkg-check-config", "/bin/update-alternatives", "/share/opkg/intercept"*/};
 
 	if (find_executable(OPKG_CL).empty()) {
 		dprintf(DEBUG_NORMAL, "[COPKGManager] [%s - %d]" OPKG_CL " executable not found\n", __func__, __LINE__);
