@@ -660,8 +660,14 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 
 	char buf[256];
 
+	bool end = true;
 	while (fgets(buf, sizeof(buf), f))
 	{
+		bool wasend = end;
+		end = buf[strlen(buf)-1] == '\n';
+		if(!wasend)
+			continue; /* parse only beginning of line */
+
 		if (buf[0] == ' ')
 			continue; /* second, third, ... line of description will not be shown anyway */
 		std::string line(buf);
