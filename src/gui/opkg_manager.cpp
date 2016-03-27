@@ -69,7 +69,12 @@
 #define OPKG_CL_CONFIG_OPTIONS " -V2 --tmp-dir=/tmp --cache=" OPKG_TMP_DIR
 
 #define OPKG_BAD_PATTERN_LIST_FILE CONFIGDIR "/bad_package_pattern.list"
+
+#if 0
+#define OPKG_CONFIG_FILE "/etc/opkg/opkg.conf"
+#else
 #define OPKG_CONFIG_FILE "/etc/opkg/opkg.conf.borken"
+#endif
 
 using namespace std;
 
