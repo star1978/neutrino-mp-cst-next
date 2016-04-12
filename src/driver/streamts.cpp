@@ -173,6 +173,8 @@ bool CStreamInstance::Open()
 		return false;
 
 	dmx = new cDemux(tmpchan->getRecordDemux());//FIXME
+	if(!dmx)
+		return false;
 	return dmx->Open(DMX_TP_CHANNEL, NULL, DMX_BUFFER_SIZE);
 }
 
@@ -806,13 +808,25 @@ bool CStreamStream::Open()
 
 	printf("%s: Open input [%s]....\n", __FUNCTION__, url.c_str());
 
+	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	AVDictionary *options = NULL;
+	av_dict_set(&options, "auth_type", "basic", 0);
 	if (!headers.empty())
+	{
+		headers += "\r\n";
 		av_dict_set(&options, "headers", headers.c_str(), 0);
+	}
+
+	av_log_set_level(AV_LOG_DEBUG);
 	if (avformat_open_input(&ifcx, url.c_str(), NULL, &options) != 0) {
 		printf("%s: Cannot open input [%s]!\n", __FUNCTION__, channel->getUrl().c_str());
+		av_log_set_level(AV_LOG_INFO);
+		av_dict_free(&options);
 		return false;
 	}
+
+	av_log_set_level(AV_LOG_INFO);
+	av_dict_free(&options);
 
 	if (avformat_find_stream_info(ifcx, NULL) < 0) {
 		printf("%s: Cannot find stream info [%s]!\n", __FUNCTION__, channel->getUrl().c_str());
@@ -863,7 +877,7 @@ bool CStreamStream::Open()
 	}
 	av_log_set_level(AV_LOG_VERBOSE);
 	av_dump_format(ofcx, 0, ofcx->filename, 1);
-	av_log_set_level(AV_LOG_WARNING);
+	av_log_set_level(AV_LOG_INFO);
 	bsfc = av_bitstream_filter_init("h264_mp4toannexb");
 	if (!bsfc)
 		printf("%s: av_bitstream_filter_init h264_mp4toannexb failed!\n", __FUNCTION__);
@@ -886,6 +900,8 @@ bool CStreamStream::Stop()
 {
 	if (stopped)
 		return false;
+
+	av_log(NULL, AV_LOG_QUIET, "%s", "");
 
 	printf("%s: Stopping...\n", __FUNCTION__);
 	interrupt = true;
