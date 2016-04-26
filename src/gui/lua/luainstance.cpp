@@ -636,8 +636,10 @@ CLuaData *CLuaInstance::CheckData(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
+	if (!ud) {
 		fprintf(stderr, "[CLuaInstance::%s] wrong type %p, %d, %s\n", __func__, L, narg, className);
+		return NULL;
+	}
 	return *(CLuaData **)ud;  // unbox pointer
 }
 
@@ -693,9 +695,12 @@ int CLuaInstance::GCWindow(lua_State *L)
 	else if (videoDecoder->getBlank())
 		CLuaInstVideo::getInstance()->channelRezap(L);
 
-	delete w->fbwin;
-	w->rcinput = NULL;
-	delete w;
+	if(w){
+		if(w->fbwin)
+			delete w->fbwin;
+		w->rcinput = NULL;
+		delete w;
+	}
 	return 0;
 }
 

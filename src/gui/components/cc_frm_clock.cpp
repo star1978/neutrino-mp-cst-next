@@ -316,15 +316,15 @@ bool CComponentsFrmClock::startClock()
 	}
 
 	if (cl_timer == NULL){
-		cl_timer = new CComponentsTimer();
+		cl_timer = new CComponentsTimer(0);
 		if (cl_timer->OnTimer.empty()){
 			dprintf(DEBUG_INFO,"\033[33m[CComponentsFrmClock]\t[%s] init slot...\033[0m\n", __func__);
 			cl_timer->OnTimer.connect(cl_sl);
 		}
 	}
-	cl_timer->setTimerIntervall(cl_interval);
+	cl_timer->setTimerInterval(cl_interval);
 
-	if (cl_timer->isRun())
+	if (cl_timer->startTimer())
 		return true;
 
 	return  false;
@@ -346,11 +346,9 @@ bool CComponentsFrmClock::stopClock()
 	return false;
 }
 
-bool CComponentsFrmClock::Start(bool do_save_bg)
+bool CComponentsFrmClock::Start()
 {
 	if (startClock()) {
-		//ensure paint of segements on first paint
-		paint(do_save_bg);
 		paintClock = true;
 		return true;
 	}
